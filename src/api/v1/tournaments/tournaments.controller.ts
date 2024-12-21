@@ -8,7 +8,6 @@ import {
 } from "./tournaments.service";
 import { validateData } from "../../../middleware/validation.middleware";
 import { createTournamentSchema } from "./validationSchema";
-import { IUserAuthRequest } from "../../../interfaces/IUserAuthRequest";
 import { ApiError } from "../../../utils/apiError";
 
 const tournaments = Router();
@@ -37,10 +36,10 @@ tournaments.get(
 tournaments.post(
   "/",
   validateData(createTournamentSchema),
-  async (req: IUserAuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     const newTournament = await createTournament({
       ...req.body,
-      ownerId: req.userId,
+      ownerId: req.user?.id,
     });
 
     return res.status(200).json(newTournament);
@@ -50,10 +49,10 @@ tournaments.post(
 tournaments.patch(
   "/:id",
   validateData(createTournamentSchema),
-  async (req: IUserAuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    if (req.userId !== id) {
+    if (req.user?.id !== parseInt(id)) {
       return next(
         new ApiError("You are not allowed to update this resource", 403)
       );
@@ -67,10 +66,10 @@ tournaments.patch(
 
 tournaments.delete(
   "/:id",
-  async (req: IUserAuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    if (req.userId !== id) {
+    if (req.user?.id !== parseInt(id)) {
       return next(
         new ApiError("You are not allowed to delete this resource", 403)
       );

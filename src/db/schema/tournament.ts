@@ -10,6 +10,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { user } from "./user";
 
 export const tournamentRoomPosition = pgEnum("tournamentRoomPosition", [
   "OPENING_GOVERNMENT",
@@ -26,7 +27,11 @@ export const tournament = pgTable(
     description: text("description").notNull(),
     icon: varchar("icon", { length: 256 }),
     location: varchar("location", { length: 256 }).notNull(),
-    ownerId: varchar("ownerId", { length: 256 }).notNull(),
+    ownerId: integer("ownerId")
+      .references(() => user.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     maxTeams: integer("maxTeams").notNull(),
     registrationFee: integer("registrationFee").notNull(),
     isActive: boolean("isActive").default(true),
@@ -46,8 +51,12 @@ export const tournamentTeam = pgTable(
   {
     id: serial("id").primaryKey(),
     title: varchar("title", { length: 160 }),
-    firstSpeakerId: varchar("firstSpeakerId").notNull(),
-    secondSpeakerId: varchar("secondSpeakerId").notNull(),
+    firstSpeakerId: integer("firstSpeakerId")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
+    secondSpeakerId: integer("secondSpeakerId")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
     tournamentId: integer("tournamentId")
       .references(() => tournament.id, { onDelete: "cascade" })
       .notNull(),
@@ -59,7 +68,9 @@ export const tournamentTeam = pgTable(
 
 export const tournamentJudge = pgTable("tournament_judge", {
   id: serial("id").primaryKey(),
-  judgeId: varchar("judgeId", { length: 256 }).notNull(),
+  judgeId: integer("judgeId")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
   tournamentId: integer("tournamentId")
     .references(() => tournament.id, {
       onDelete: "cascade",
@@ -73,7 +84,9 @@ export const tournamentUserSpeakerPoint = pgTable(
   "tournament_user_speaker_point",
   {
     id: serial("id").primaryKey(),
-    userId: varchar("userId", { length: 256 }).notNull(),
+    userId: integer("userId")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
     tournamentId: integer("tournamentId")
       .references(() => tournament.id, {
         onDelete: "cascade",
@@ -87,7 +100,9 @@ export const tournamentUserSpeakerPoint = pgTable(
 
 export const tournamentJudgePoint = pgTable("tournament_judge_point", {
   id: serial("id").primaryKey(),
-  judgeId: varchar("judgeId", { length: 256 }).notNull(),
+  judgeId: integer("judgeId")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
   tournamentId: integer("tournamentId")
     .references(() => tournament.id, {
       onDelete: "cascade",
@@ -135,7 +150,9 @@ export const tournamentRoom = pgTable("tournament_room", {
       onDelete: "cascade",
     })
     .notNull(),
-  judgeId: varchar("judgeId", { length: 256 }).notNull(),
+  judgeId: integer("judgeId")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
   room: integer("room"),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAT: timestamp("updatedAt").defaultNow(),
@@ -160,8 +177,12 @@ export const userTournamentTeamInvitation = pgTable(
   "user_tournament_team_invitation",
   {
     id: serial("id").primaryKey(),
-    inviterId: varchar("inviterId", { length: 256 }).notNull(),
-    receiverId: varchar("receiverId", { length: 256 }).notNull(),
+    inviterId: integer("inviterId")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
+    receiverId: integer("receiverId")
+      .references(() => user.id, { onDelete: "cascade" })
+      .notNull(),
     tournamentId: integer("tournamentId")
       .references(() => tournament.id)
       .notNull(),
@@ -174,19 +195,28 @@ export const userTournamentTeamInvitation = pgTable(
 
 // Relations
 
-export const tournamentRelations = relations(tournament, ({ many }) => ({
+export const tournamentRelations = relations(tournament, ({ many, one }) => ({
   teams: many(tournamentTeam),
   judges: many(tournamentJudge),
   userSpeakerPoints: many(tournamentUserSpeakerPoint),
   judgePoints: many(tournamentJudgePoint),
   rounds: many(tournamentRound),
   rooms: many(tournamentRoom),
+  owner: one(user, { fields: [tournament.ownerId], references: [user.id] }),
 }));
 
 export const tournamentTeamRelations = relations(tournamentTeam, ({ one }) => ({
   tournament: one(tournament, {
     fields: [tournamentTeam.tournamentId],
     references: [tournament.id],
+  }),
+  firstSpeaker: one(user, {
+    fields: [tournamentTeam.firstSpeakerId],
+    references: [user.id],
+  }),
+  secondSpeaker: one(user, {
+    fields: [tournamentTeam.secondSpeakerId],
+    references: [user.id],
   }),
 }));
 
@@ -196,6 +226,10 @@ export const tournamentJudgeRelations = relations(
     tournament: one(tournament, {
       fields: [tournamentJudge.tournamentId],
       references: [tournament.id],
+    }),
+    judge: one(user, {
+      fields: [tournamentJudge.judgeId],
+      references: [user.id],
     }),
   })
 );
@@ -207,6 +241,10 @@ export const tournamentUserSpeakerPointRelations = relations(
       fields: [tournamentUserSpeakerPoint.tournamentId],
       references: [tournament.id],
     }),
+    user: one(user, {
+      fields: [tournamentUserSpeakerPoint.userId],
+      references: [user.id],
+    }),
   })
 );
 
@@ -216,6 +254,10 @@ export const tournamentJudgePointRelations = relations(
     tournament: one(tournament, {
       fields: [tournamentJudgePoint.tournamentId],
       references: [tournament.id],
+    }),
+    judge: one(user, {
+      fields: [tournamentJudgePoint.judgeId],
+      references: [user.id],
     }),
   })
 );
@@ -249,6 +291,10 @@ export const tournamentRoomRelations = relations(
       references: [tournament.id],
     }),
     roomTeams: many(tournamentRoomTeam),
+    judge: one(user, {
+      fields: [tournamentRoom.judgeId],
+      references: [user.id],
+    }),
   })
 );
 
@@ -272,6 +318,14 @@ export const userTournamentTeamInvitationRelations = relations(
     tournament: one(tournament, {
       fields: [userTournamentTeamInvitation.tournamentId],
       references: [tournament.id],
+    }),
+    inviter: one(user, {
+      fields: [userTournamentTeamInvitation.inviterId],
+      references: [user.id],
+    }),
+    receiver: one(user, {
+      fields: [userTournamentTeamInvitation.receiverId],
+      references: [user.id],
     }),
   })
 );

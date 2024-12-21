@@ -1,6 +1,5 @@
 import { Router, Response, Request, NextFunction } from "express";
 import { validateData } from "../../../middleware/validation.middleware";
-import { IUserAuthRequest } from "../../../interfaces/IUserAuthRequest";
 import {
   acceptInvitation,
   getTeamInvitationById,
@@ -15,10 +14,10 @@ const teamInvitations = Router();
 teamInvitations.post(
   "/invite_user",
   validateData(inviteUserToTournamentSchema),
-  async (req: IUserAuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     const team = await inviteUserToTournament({
       ...req.body,
-      inviterId: req.userId,
+      inviterId: req.user?.id,
     });
 
     return res.status(200).json(team);
@@ -33,12 +32,12 @@ teamInvitations.get("/", async (req: Request, res: Response) => {
 
 teamInvitations.post(
   "/:id/accept",
-  async (req: IUserAuthRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     const currentInvitation = await getTeamInvitationById(+id!);
 
-    if (req.userId !== currentInvitation?.receiverId) {
+    if (req.user?.id !== currentInvitation?.receiverId) {
       next(new ApiError("You are not allowed to accept this invitation", 403));
     }
 

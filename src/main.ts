@@ -11,11 +11,8 @@ import rateLimit from "express-rate-limit";
 import compression from "compression";
 import morgan from "morgan";
 import cors from "cors";
-import axios from "axios";
 import api from "./api/v1";
 import errorMiddleware from "./middleware/error.middleware";
-import { redis } from "./redisClient";
-import { Keys } from "./config/keys";
 
 dotenv.config();
 
@@ -26,16 +23,6 @@ const port: number = 3000;
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 180,
-});
-
-axios.interceptors.request.use(async (config) => {
-  const token = await redis.get(Keys.ACCES_TOKEN_DATA);
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
 });
 
 app.use(cors());
