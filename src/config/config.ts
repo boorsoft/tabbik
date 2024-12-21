@@ -8,5 +8,6 @@ export class Config {
   static pgDatabase = process.env.PGDATABASE!;
   static pgUser = process.env.PGUSER!;
   static pgPassword = process.env.PGPASSWORD!;
+  static pgPort = Number(process.env.PGPORT!);
   static secretKey = process.env.SECRET_KEY!;
 }

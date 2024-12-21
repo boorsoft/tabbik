@@ -6,6 +6,10 @@ export default defineConfig({
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: Config.databaseUrl,
+    user: Config.pgUser,
+    password: Config.pgPassword,
+    database: Config.pgDatabase,
+    host: Config.pgHost,
+    port: Config.pgPort,
   },
 });
