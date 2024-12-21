@@ -1,8 +1,5 @@
 import { createInsertSchema } from "drizzle-zod";
-import {
-  tournament,
-  userTournamentTeamInvitation,
-} from "../../../db/schema/tournament";
+import { tournament } from "../../../db/schema/tournament";
 import { z } from "zod";
 
 export const createTournamentSchema = createInsertSchema(tournament, {
