@@ -23,7 +23,7 @@ const responseMiddleware = (
 
     const response: ISuccessResponse<T> = {
       success: true,
-      data,
+      data: data ?? null,
       message,
       error: null,
     };
@@ -50,7 +50,7 @@ const responseMiddleware = (
   res.error = (error: ApiError) => {
     const response: IErrorResponse = {
       success: false,
-      message: error.message,
+      error: error.message,
       data: null,
       statusCode: error.statusCode,
     };

@@ -2,6 +2,7 @@ import { ApiError } from "../../../utils/apiError";
 import { createUser, getUserByUsername } from "../user/user.service";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../../../utils/jwt";
+import { UserSelect } from "../user/types";
 
 export async function login(username: string, password: string) {
   const user = await getUserByUsername(username);
@@ -21,7 +22,13 @@ export async function signup(
   email: string,
   password: string
 ) {
+  const user: UserSelect = await getUserByUsername(username);
+
+  if (user) throw new ApiError("User already exists!", 400);
+
   const hash = await bcrypt.hash(password, 10);
 
-  return createUser({ username, email, password: hash });
+  const newUser = await createUser({ username, email, password: hash });
+
+  return newUser;
 }

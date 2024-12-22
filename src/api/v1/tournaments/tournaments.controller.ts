@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import * as tournamentService from "./tournaments.service";
 import { ApiError } from "../../../utils/apiError";
+
+import * as tournamentService from "./tournaments.service";
 
 export const getTournaments = async (
   req: Request,
@@ -11,7 +12,7 @@ export const getTournaments = async (
   try {
     const tournaments = await tournamentService.getTournaments();
 
-    return res.status(200).json(tournaments);
+    return res.success(tournaments);
   } catch (e) {
     next(e);
   }

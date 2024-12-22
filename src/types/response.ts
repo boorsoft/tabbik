@@ -1,6 +1,6 @@
 export interface ISuccessResponse<T> {
   success: true;
-  data: T;
+  data: T | null;
   message: string;
   error: null;
 }
@@ -8,7 +8,7 @@ export interface ISuccessResponse<T> {
 export interface IErrorResponse {
   success: false;
   data: null;
-  message: string;
+  error: string;
   statusCode: number;
   stack?: string;
 }
