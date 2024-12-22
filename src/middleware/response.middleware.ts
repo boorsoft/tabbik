@@ -10,10 +10,15 @@ const responseMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  res.success = <T>(
-    data: T,
-    message: string = "Data fetched successfully!"
-  ) => {
+  res.success = <T>(data: T, message: string = "Success!") => {
+    let statusCode = 200;
+
+    if (req.method === "POST") {
+      statusCode = 201;
+    } else if (req.method === "DELETE") {
+      statusCode = 204;
+    }
+
     const response: ISuccessResponse<T> = {
       success: true,
       data,
@@ -21,13 +26,13 @@ const responseMiddleware = async (
       error: null,
     };
 
-    res.status(200).json(response);
+    res.status(statusCode).json(response);
   };
 
   res.paginated = <T>(
     data: T[],
     pagination: IPaginationMetadata,
-    message: string = "Data fetched successfully!"
+    message: string = "Success!"
   ) => {
     const response: IPaginatedResponse<T> = {
       success: true,

@@ -22,7 +22,7 @@ export const getTournamentDetails = async (
     return next(new ApiError("Not found", 404));
   }
 
-  return res.status(200).json(tournament);
+  return res.success(tournament);
 };
 
 export const createTournament = async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ export const createTournament = async (req: Request, res: Response) => {
     ownerId: req.user?.id,
   });
 
-  return res.status(200).json(newTournament);
+  return res.success(newTournament);
 };
 
 export const updateTournament = async (
@@ -52,7 +52,7 @@ export const updateTournament = async (
     req.body
   );
 
-  return res.status(200).json(updatedTournament);
+  return res.success(updatedTournament);
 };
 
 export const deleteTournament = async (
@@ -72,5 +72,5 @@ export const deleteTournament = async (
     .deleteTournament(+id!)
     .catch((e) => next(new ApiError(e.message, 400)));
 
-  return res.status(200).json({ message: "Deleted successfully" });
+  return res.success(null, "Tournament deleted successfully!");
 };

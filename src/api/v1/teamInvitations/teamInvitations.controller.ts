@@ -4,18 +4,18 @@ import * as teamInvitationService from "./teamInvitations.service";
 import { ApiError } from "../../../utils/apiError";
 
 export const inviteUserToTournament = async (req: Request, res: Response) => {
-  const team = await teamInvitationService.inviteUserToTournament({
+  const teamInvitation = await teamInvitationService.inviteUserToTournament({
     ...req.body,
     inviterId: req.user?.id,
   });
 
-  return res.status(200).json(team);
+  return res.success(teamInvitation);
 };
 
 export const getUserTeamInvitations = async (req: Request, res: Response) => {
   const teamInvitations = await teamInvitationService.getUserTeamInvitations();
 
-  return res.status(200).json(teamInvitations);
+  return res.success(teamInvitations);
 };
 
 export const acceptTeamInvitation = async (
@@ -35,5 +35,5 @@ export const acceptTeamInvitation = async (
 
   const invitation = await teamInvitationService.acceptInvitation(+id!);
 
-  return res.status(200).json(invitation);
+  return res.success(invitation);
 };
