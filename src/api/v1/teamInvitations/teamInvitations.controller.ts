@@ -1,50 +1,39 @@
-import { Router, Response, Request, NextFunction } from "express";
-import { validateData } from "../../../middleware/validation.middleware";
-import {
-  acceptInvitation,
-  getTeamInvitationById,
-  getUserTeamInvitations,
-  inviteUserToTournament,
-} from "./teamInvitations.service";
-import { inviteUserToTournamentSchema } from "./validationSchema";
+import { NextFunction, Request, Response } from "express";
+
+import * as teamInvitationService from "./teamInvitations.service";
 import { ApiError } from "../../../utils/apiError";
 
-const teamInvitations = Router();
+export const inviteUserToTournament = async (req: Request, res: Response) => {
+  const team = await teamInvitationService.inviteUserToTournament({
+    ...req.body,
+    inviterId: req.user?.id,
+  });
 
-teamInvitations.post(
-  "/invite_user",
-  validateData(inviteUserToTournamentSchema),
-  async (req: Request, res: Response) => {
-    const team = await inviteUserToTournament({
-      ...req.body,
-      inviterId: req.user?.id,
-    });
+  return res.status(200).json(team);
+};
 
-    return res.status(200).json(team);
-  }
-);
-
-teamInvitations.get("/", async (req: Request, res: Response) => {
-  const teamInvitations = await getUserTeamInvitations();
+export const getUserTeamInvitations = async (req: Request, res: Response) => {
+  const teamInvitations = await teamInvitationService.getUserTeamInvitations();
 
   return res.status(200).json(teamInvitations);
-});
+};
 
-teamInvitations.post(
-  "/:id/accept",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+export const acceptTeamInvitation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
 
-    const currentInvitation = await getTeamInvitationById(+id!);
+  const currentInvitation = await teamInvitationService.getTeamInvitationById(
+    +id!
+  );
 
-    if (req.user?.id !== currentInvitation?.receiverId) {
-      next(new ApiError("You are not allowed to accept this invitation", 403));
-    }
-
-    const invitation = await acceptInvitation(+id!);
-
-    return res.status(200).json(invitation);
+  if (req.user?.id !== currentInvitation?.receiverId) {
+    next(new ApiError("You are not allowed to accept this invitation", 403));
   }
-);
 
-export default teamInvitations;
+  const invitation = await teamInvitationService.acceptInvitation(+id!);
+
+  return res.status(200).json(invitation);
+};

@@ -1,29 +1,19 @@
 import { Request, Response, Router } from "express";
-import { login, signup } from "./auth.service";
-import { validateData } from "../../../middleware/validation.middleware";
-import {
-  loginValidationSchema,
-  signupValidationSchema,
-} from "./validationSchema";
 
-export const auth = Router();
+import * as authService from "./auth.service";
 
-auth.post(
-  "/login",
-  validateData(loginValidationSchema),
-  async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+export const login = async (req: Request, res: Response) => {
+  const { username, password } = req.body;
 
-    return login(username, password);
-  }
-);
+  const token = await authService.login(username, password);
 
-auth.post(
-  "/signup",
-  validateData(signupValidationSchema),
-  async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
+  return res.status(200).json({ token });
+};
 
-    return signup(username, email, password);
-  }
-);
+export const signup = async (req: Request, res: Response) => {
+  const { username, email, password } = req.body;
+
+  const user = await authService.signup(username, email, password);
+
+  return res.status(200).json(user);
+};

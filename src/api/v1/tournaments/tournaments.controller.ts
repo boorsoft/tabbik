@@ -1,86 +1,76 @@
-import { NextFunction, Request, Response, Router } from "express";
-import {
-  createTournament,
-  deleteTournament,
-  getTournamentById,
-  getTournaments,
-  updateTournament,
-} from "./tournaments.service";
-import { validateData } from "../../../middleware/validation.middleware";
-import { createTournamentSchema } from "./validationSchema";
+import { NextFunction, Request, Response } from "express";
+
+import * as tournamentService from "./tournaments.service";
 import { ApiError } from "../../../utils/apiError";
 
-const tournaments = Router();
-
-tournaments.get("/", async (req: Request, res: Response) => {
-  const tournaments = await getTournaments();
+export const getTournaments = async (req: Request, res: Response) => {
+  const tournaments = await tournamentService.getTournaments();
 
   return res.status(200).json(tournaments);
-});
+};
 
-tournaments.get(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+export const getTournamentDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
 
-    const tournament = await getTournamentById(+id!);
+  const tournament = await tournamentService.getTournamentById(+id!);
 
-    if (!tournament) {
-      return next(new ApiError("Not found", 404));
-    }
-
-    return res.status(200).json(tournament);
+  if (!tournament) {
+    return next(new ApiError("Not found", 404));
   }
-);
 
-tournaments.post(
-  "/",
-  validateData(createTournamentSchema),
-  async (req: Request, res: Response) => {
-    const newTournament = await createTournament({
-      ...req.body,
-      ownerId: req.user?.id,
-    });
+  return res.status(200).json(tournament);
+};
 
-    return res.status(200).json(newTournament);
-  }
-);
+export const createTournament = async (req: Request, res: Response) => {
+  const newTournament = await tournamentService.createTournament({
+    ...req.body,
+    ownerId: req.user?.id,
+  });
 
-tournaments.patch(
-  "/:id",
-  validateData(createTournamentSchema),
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+  return res.status(200).json(newTournament);
+};
 
-    if (req.user?.id !== parseInt(id)) {
-      return next(
-        new ApiError("You are not allowed to update this resource", 403)
-      );
-    }
+export const updateTournament = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
 
-    const updatedTournament = await updateTournament(+id!, req.body);
-
-    return res.status(200).json(updatedTournament);
-  }
-);
-
-tournaments.delete(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-
-    if (req.user?.id !== parseInt(id)) {
-      return next(
-        new ApiError("You are not allowed to delete this resource", 403)
-      );
-    }
-
-    await deleteTournament(+id!).catch((e) =>
-      next(new ApiError(e.message, 400))
+  if (req.user?.id !== parseInt(id)) {
+    return next(
+      new ApiError("You are not allowed to update this resource", 403)
     );
-
-    return res.status(200).json({ message: "Deleted successfully" });
   }
-);
 
-export default tournaments;
+  const updatedTournament = await tournamentService.updateTournament(
+    +id!,
+    req.body
+  );
+
+  return res.status(200).json(updatedTournament);
+};
+
+export const deleteTournament = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  if (req.user?.id !== parseInt(id)) {
+    return next(
+      new ApiError("You are not allowed to delete this resource", 403)
+    );
+  }
+
+  await tournamentService
+    .deleteTournament(+id!)
+    .catch((e) => next(new ApiError(e.message, 400)));
+
+  return res.status(200).json({ message: "Deleted successfully" });
+};
