@@ -36,6 +36,13 @@
       "when": 1734817551013,
       "tag": "0004_old_pepper_potts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1734909059378,
+      "tag": "0005_sturdy_lockjaw",
+      "breakpoints": true
     }
   ]
 }
