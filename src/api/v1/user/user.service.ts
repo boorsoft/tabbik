@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../../db/db";
 import { user } from "../../../db/schema/user";
-import { UserInsert } from "./types";
+import { UserInsert, UserSelect } from "./types";
 
 export async function createUser(userData: UserInsert) {
   return db.insert(user).values(userData).returning();
 }
 
-export async function getUserByUsername(username: string) {
-  return db.query.user.findFirst({ where: eq(user.username, username) });
+export async function getUserByUsername(username: string): Promise<UserSelect> {
+  return db.select().from(user).where(eq(user.username, username))[0];
 }

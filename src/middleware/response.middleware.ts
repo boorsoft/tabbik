@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  IErrorResponse,
   IPaginatedResponse,
   IPaginationMetadata,
   ISuccessResponse,
 } from "../types/response";
+import { ApiError } from "../utils/apiError";
 
-const responseMiddleware = async (
+const responseMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -43,6 +45,17 @@ const responseMiddleware = async (
     };
 
     res.status(200).json(response);
+  };
+
+  res.error = (error: ApiError) => {
+    const response: IErrorResponse = {
+      success: false,
+      message: error.message,
+      data: null,
+      statusCode: error.statusCode,
+    };
+
+    res.status(error.statusCode).json(response);
   };
 
   next();

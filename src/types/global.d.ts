@@ -10,7 +10,7 @@ declare global {
 
     export interface Response {
       success<T>(data: T, message?: string): void;
-      error(error: ApiError, statusCode?: number): void;
+      error(error: Error | ApiError, statusCode?: number): void;
       paginated<T>(
         data: T[],
         pagination: IPaginationMetadata,

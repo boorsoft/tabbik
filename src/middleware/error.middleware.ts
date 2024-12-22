@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/apiError";
-import { IErrorResponse } from "../types/response";
 
 const errorMiddleware = (
   err: ApiError | Error,
@@ -8,22 +7,15 @@ const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const statusCode = err instanceof ApiError ? err.statusCode : 500;
-  const message = err.message || "Something went wrong";
-
   if (process.env.NODE_ENV !== "production") {
     console.error("Error: ", err);
   }
 
-  const response: IErrorResponse = {
-    success: false,
-    statusCode,
-    data: null,
-    message,
-    stack: process.env.NODE_ENV !== "production" ? err.stack : "",
-  };
-
-  res.status(statusCode).json(response);
+  if (err instanceof ApiError) {
+    res.error(err);
+  } else {
+    res.error(new ApiError("Internal server error", 500));
+  }
 
   next();
 };

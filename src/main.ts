@@ -13,6 +13,7 @@ import morgan from "morgan";
 import cors from "cors";
 import api from "./api/v1";
 import errorMiddleware from "./middleware/error.middleware";
+import responseMiddleware from "./middleware/response.middleware";
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ app.use(limiter);
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to Tabbik!");
 });
+
+app.use(responseMiddleware);
 
 app.use("/api/v1", api);
 
