@@ -9,8 +9,10 @@ export const getTournaments = async (
   res: Response,
   next: NextFunction
 ) => {
+  const { page, size } = req.query;
+
   try {
-    const tournaments = await tournamentService.getTournaments();
+    const tournaments = await tournamentService.getTournaments(+page!, +size!);
 
     return res.success(tournaments);
   } catch (e) {
@@ -29,7 +31,7 @@ export const getTournamentDetails = async (
     const tournament = await tournamentService.getTournamentById(+id!);
 
     if (!tournament) {
-      return next(new ApiError("Not found", 404));
+      return next(new ApiError("Tournament not found", 404));
     }
 
     return res.success(tournament);

@@ -3,10 +3,16 @@ import { validateData } from "../../../middleware/validation.middleware";
 import { createTournamentSchema } from "./validationSchema";
 
 import * as tournamentsController from "./tournaments.controller";
+import validateQuery from "../../../middleware/queryValidation.middleware";
+import paginationValidationSchema from "../../../common/paginationValidationSchema";
 
 const tournaments = Router();
 
-tournaments.get("/", tournamentsController.getTournaments);
+tournaments.get(
+  "/",
+  validateQuery(paginationValidationSchema),
+  tournamentsController.getTournaments
+);
 
 tournaments.get("/:id", tournamentsController.getTournamentDetails);
 

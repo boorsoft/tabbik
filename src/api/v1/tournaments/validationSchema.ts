@@ -14,3 +14,10 @@ export const createTournamentSchema = createInsertSchema(tournament, {
   isActive: true,
   isRunning: true,
 });
+
+export const tournamentFilterSchema = z.object({
+  title: z.string().optional(),
+  owner: z.number().positive().optional(),
+  isActive: z.boolean().optional(),
+  isRunning: z.boolean().optional(),
+});
