@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../utils/apiError";
+import { IErrorResponse } from "../types/response";
 
 const errorMiddleware = (
   err: ApiError | Error,
@@ -14,12 +15,17 @@ const errorMiddleware = (
     console.error("Error: ", err);
   }
 
-  res.status(statusCode).json({
-    status: "error",
+  const response: IErrorResponse = {
+    success: false,
     statusCode,
+    data: null,
     message,
     stack: process.env.NODE_ENV !== "production" ? err.stack : "",
-  });
+  };
+
+  res.status(statusCode).json(response);
+
+  next();
 };
 
 export default errorMiddleware;
