@@ -26,4 +26,16 @@ teamInvitations.post(
   teamInvitationController.acceptTeamInvitation
 );
 
+teamInvitations.delete(
+  "/:id/cancel",
+  roleMiddleware(["USER"]),
+  teamInvitationController.cancelTeamInvitation
+);
+
+teamInvitations.delete(
+  "/:id/reject",
+  roleMiddleware(["USER"]),
+  teamInvitationController.rejectTeamInvitation
+);
+
 export default teamInvitations;

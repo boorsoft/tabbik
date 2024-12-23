@@ -1,0 +1,1 @@
+ALTER TABLE "tournament_team" ADD COLUMN "isApproved" boolean DEFAULT false;

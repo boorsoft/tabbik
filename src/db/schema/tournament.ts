@@ -60,6 +60,7 @@ export const tournamentTeam = pgTable(
     tournamentId: integer("tournamentId")
       .references(() => tournament.id, { onDelete: "cascade" })
       .notNull(),
+    isApproved: boolean("isApproved").default(false),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAT: timestamp("updatedAt").defaultNow(),
   },

@@ -74,3 +74,9 @@ export async function acceptInvitation(invitationId: number) {
 
   return data[0];
 }
+
+export async function cancelOrRejectInvitation(invitationId: number) {
+  return db
+    .delete(userTournamentTeamInvitation)
+    .where(eq(userTournamentTeamInvitation.id, invitationId));
+}
