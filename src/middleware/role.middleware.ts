@@ -9,9 +9,12 @@ export default function roleMiddleware(roles?: Role[]) {
     if (roles) {
       if (roles.includes(userRole) || userRole === "ADMIN") {
         next();
+        return;
       }
 
       next(new ApiError("You don't have access to this resource.", 403));
+
+      return;
     }
 
     next();

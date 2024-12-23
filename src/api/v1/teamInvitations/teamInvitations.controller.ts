@@ -52,6 +52,7 @@ export const acceptTeamInvitation = async (
 
     if (req.user?.id !== currentInvitation?.receiverId) {
       next(new ApiError("You are not allowed to accept this invitation", 403));
+      return;
     }
 
     const invitation = await teamInvitationService.acceptInvitation(+id!);
