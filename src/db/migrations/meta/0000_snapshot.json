@@ -1,5 +1,5 @@
 {
-  "id": "26bc259a-c347-4484-b0b0-13303c6b5af4",
+  "id": "c765d69b-a315-47a4-8b8c-e74bdcca878d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -40,7 +40,7 @@
         },
         "ownerId": {
           "name": "ownerId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -61,6 +61,13 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
+          "default": true
+        },
+        "isRunning": {
+          "name": "isRunning",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
           "default": false
         },
         "startDate": {
@@ -74,7 +81,7 @@
           "name": "endDate",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
@@ -108,98 +115,13 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "tournament_title_unique": {
-          "name": "tournament_title_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "title"
-          ]
-        }
-      }
-    },
-    "public.tournament_join_request": {
-      "name": "tournament_join_request",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "firstSpeakerId": {
-          "name": "firstSpeakerId",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "secondSpeakerId": {
-          "name": "secondSpeakerId",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "teamTitle": {
-          "name": "teamTitle",
-          "type": "varchar(120)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "isApproved": {
-          "name": "isApproved",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "tournamentId": {
-          "name": "tournamentId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "teamTitleIdx": {
-          "name": "teamTitleIdx",
-          "columns": [
-            {
-              "expression": "teamTitle",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
       "foreignKeys": {
-        "tournament_join_request_tournamentId_tournament_id_fk": {
-          "name": "tournament_join_request_tournamentId_tournament_id_fk",
-          "tableFrom": "tournament_join_request",
-          "tableTo": "tournament",
+        "tournament_ownerId_user_id_fk": {
+          "name": "tournament_ownerId_user_id_fk",
+          "tableFrom": "tournament",
+          "tableTo": "user",
           "columnsFrom": [
-            "tournamentId"
+            "ownerId"
           ],
           "columnsTo": [
             "id"
@@ -210,11 +132,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "tournament_join_request_teamTitle_unique": {
-          "name": "tournament_join_request_teamTitle_unique",
+        "tournament_title_unique": {
+          "name": "tournament_title_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "teamTitle"
+            "title"
           ]
         }
       }
@@ -231,7 +153,7 @@
         },
         "judgeId": {
           "name": "judgeId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -258,6 +180,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "tournament_judge_judgeId_user_id_fk": {
+          "name": "tournament_judge_judgeId_user_id_fk",
+          "tableFrom": "tournament_judge",
+          "tableTo": "user",
+          "columnsFrom": [
+            "judgeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "tournament_judge_tournamentId_tournament_id_fk": {
           "name": "tournament_judge_tournamentId_tournament_id_fk",
           "tableFrom": "tournament_judge",
@@ -287,7 +222,7 @@
         },
         "judgeId": {
           "name": "judgeId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -320,6 +255,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "tournament_judge_point_judgeId_user_id_fk": {
+          "name": "tournament_judge_point_judgeId_user_id_fk",
+          "tableFrom": "tournament_judge_point",
+          "tableTo": "user",
+          "columnsFrom": [
+            "judgeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "tournament_judge_point_tournamentId_tournament_id_fk": {
           "name": "tournament_judge_point_tournamentId_tournament_id_fk",
           "tableFrom": "tournament_judge_point",
@@ -355,7 +303,7 @@
         },
         "judgeId": {
           "name": "judgeId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -388,6 +336,19 @@
           "tableTo": "tournament",
           "columnsFrom": [
             "tournamentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tournament_room_judgeId_user_id_fk": {
+          "name": "tournament_room_judgeId_user_id_fk",
+          "tableFrom": "tournament_room",
+          "tableTo": "user",
+          "columnsFrom": [
+            "judgeId"
           ],
           "columnsTo": [
             "id"
@@ -634,13 +595,13 @@
         },
         "firstSpeakerId": {
           "name": "firstSpeakerId",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "secondSpeakerId": {
           "name": "secondSpeakerId",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -683,6 +644,32 @@
         }
       },
       "foreignKeys": {
+        "tournament_team_firstSpeakerId_user_id_fk": {
+          "name": "tournament_team_firstSpeakerId_user_id_fk",
+          "tableFrom": "tournament_team",
+          "tableTo": "user",
+          "columnsFrom": [
+            "firstSpeakerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tournament_team_secondSpeakerId_user_id_fk": {
+          "name": "tournament_team_secondSpeakerId_user_id_fk",
+          "tableFrom": "tournament_team",
+          "tableTo": "user",
+          "columnsFrom": [
+            "secondSpeakerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "tournament_team_tournamentId_tournament_id_fk": {
           "name": "tournament_team_tournamentId_tournament_id_fk",
           "tableFrom": "tournament_team",
@@ -712,7 +699,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -745,6 +732,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "tournament_user_speaker_point_userId_user_id_fk": {
+          "name": "tournament_user_speaker_point_userId_user_id_fk",
+          "tableFrom": "tournament_user_speaker_point",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "tournament_user_speaker_point_tournamentId_tournament_id_fk": {
           "name": "tournament_user_speaker_point_tournamentId_tournament_id_fk",
           "tableFrom": "tournament_user_speaker_point",
@@ -774,13 +774,25 @@
         },
         "inviterId": {
           "name": "inviterId",
-          "type": "varchar(256)",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "receiverId": {
           "name": "receiverId",
-          "type": "varchar(256)",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournamentId": {
+          "name": "tournamentId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teamTitle": {
+          "name": "teamTitle",
+          "type": "varchar(130)",
           "primaryKey": false,
           "notNull": true
         },
@@ -807,9 +819,138 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "user_tournament_team_invitation_inviterId_user_id_fk": {
+          "name": "user_tournament_team_invitation_inviterId_user_id_fk",
+          "tableFrom": "user_tournament_team_invitation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "inviterId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tournament_team_invitation_receiverId_user_id_fk": {
+          "name": "user_tournament_team_invitation_receiverId_user_id_fk",
+          "tableFrom": "user_tournament_team_invitation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "receiverId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tournament_team_invitation_tournamentId_tournament_id_fk": {
+          "name": "user_tournament_team_invitation_tournamentId_tournament_id_fk",
+          "tableFrom": "user_tournament_team_invitation",
+          "tableTo": "tournament",
+          "columnsFrom": [
+            "tournamentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'USER'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_username_unique": {
+          "name": "user_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
     }
   },
   "enums": {
@@ -821,6 +962,15 @@
         "CLOSING_GOVERNMENT",
         "OPENING_OPPOSITION",
         "CLOSING_OPPOSITION"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "ADMIN",
+        "USER",
+        "MODERATOR"
       ]
     }
   },

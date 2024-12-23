@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1727530988272,
-      "tag": "0000_large_grim_reaper",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1727704496091,
-      "tag": "0001_cooing_quentin_quire",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1727706457128,
-      "tag": "0002_condemned_robbie_robertson",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1727715182947,
-      "tag": "0003_regular_pet_avengers",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1734817551013,
-      "tag": "0004_old_pepper_potts",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1734909059378,
-      "tag": "0005_sturdy_lockjaw",
+      "when": 1734951845680,
+      "tag": "0000_uneven_naoko",
       "breakpoints": true
     }
   ]
