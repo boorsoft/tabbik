@@ -65,7 +65,9 @@ export const updateTournament = async (
   const { id } = req.params;
 
   try {
-    if (req.user?.id !== parseInt(id)) {
+    const existingTournament = await tournamentService.getTournamentById(+id);
+
+    if (req.user?.id !== existingTournament?.ownerId) {
       return next(
         new ApiError("You are not allowed to update this resource", 403)
       );
@@ -90,7 +92,9 @@ export const deleteTournament = async (
   const { id } = req.params;
 
   try {
-    if (req.user?.id !== parseInt(id)) {
+    const existingTournament = await tournamentService.getTournamentById(+id);
+
+    if (req.user?.id !== existingTournament?.ownerId) {
       return next(
         new ApiError("You are not allowed to delete this resource", 403)
       );

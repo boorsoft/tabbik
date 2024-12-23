@@ -14,7 +14,7 @@ declare global {
       paginated<T>(
         data: T[],
         pagination: IPaginationMetadata,
-        message: string
+        message: string = "Success"
       ): void;
     }
   }

@@ -25,9 +25,12 @@ export const getUserTeamInvitations = async (
   res: Response,
   next: NextFunction
 ) => {
+  const userId = req.user?.id;
+
   try {
-    const teamInvitations =
-      await teamInvitationService.getUserTeamInvitations();
+    const teamInvitations = await teamInvitationService.getUserTeamInvitations(
+      userId!
+    );
 
     return res.success(teamInvitations);
   } catch (e) {

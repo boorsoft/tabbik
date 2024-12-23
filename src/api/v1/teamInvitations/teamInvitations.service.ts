@@ -18,8 +18,9 @@ export async function getTeamInvitationById(id: number) {
   });
 }
 
-export async function getUserTeamInvitations() {
+export async function getUserTeamInvitations(userId: number) {
   return db.query.userTournamentTeamInvitation.findMany({
+    where: eq(userTournamentTeamInvitation.receiverId, userId),
     with: {
       tournament: { columns: { id: true, title: true, startDate: true } },
     },
