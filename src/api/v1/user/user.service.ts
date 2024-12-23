@@ -7,7 +7,7 @@ export async function createUser(userData: UserInsert) {
   const data = await db
     .insert(user)
     .values(userData)
-    .returning({ username: user.username, email: user.email });
+    .returning({ id: user.id, username: user.username, email: user.email });
 
   return data[0];
 }

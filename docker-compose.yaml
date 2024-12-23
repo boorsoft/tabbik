@@ -3,24 +3,24 @@ services:
     build: .
     container_name: backend_container
     ports:
-      - '3000:3000'
-    volumes: 
-      - .:/tabbik-backend 
+      - "3000:3000"
+    volumes:
+      - .:/tabbik-backend
       - /tabbik-backend/node_modules
     env_file:
       - .env
     depends_on:
-      - redis 
+      - redis
       - postgres
     environment:
-      REDIS_HOST: ${REDIS_HOST} 
+      REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
 
   postgres:
     image: postgres:16-alpine
     container_name: postgres_container
     restart: always
-    ports: 
+    ports:
       - 5430:5430
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -37,6 +37,6 @@ services:
     image: "redis:7.4.0-alpine"
     ports:
       - "6379:6379"
-    
+
 volumes:
   db_data:
