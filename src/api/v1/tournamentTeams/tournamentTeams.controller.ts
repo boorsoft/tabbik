@@ -47,7 +47,7 @@ export const getTournamentTeamById = async (
   const { id } = req.params;
 
   try {
-    if (!id) next(new ApiError("Tournament team id not provided", 400));
+    if (!id) return next(new ApiError("Tournament team id not provided", 400));
 
     const tournamentTeam = await tournamentTeamService.getTournamentTeamById(
       +id
@@ -67,14 +67,14 @@ export const approveTournamentTeam = async (
   const { id } = req.params;
 
   try {
-    if (!id) next(new ApiError("Tournament team id not provided", 400));
+    if (!id) return next(new ApiError("Tournament team id not provided", 400));
 
     const approvedTeam = await tournamentTeamService.approveTournamentTeam(
       +id!,
       req.user?.id
     );
 
-    res.success(approvedTeam, "Team approved sucessfully!");
+    return res.success(approvedTeam, "Team approved sucessfully!");
   } catch (e) {
     next(e);
   }

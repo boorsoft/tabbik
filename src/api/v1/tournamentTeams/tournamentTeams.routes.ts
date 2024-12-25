@@ -3,20 +3,19 @@ import { Router } from "express";
 import * as tournamentTeamControllers from "./tournamentTeams.controller";
 import roleMiddleware from "../../../middleware/role.middleware";
 
-const tournamentTeams = Router();
+const tournamentTeamsRoutes = Router();
 
-tournamentTeams.get(
-  "/tournament-teams",
-  tournamentTeamControllers.getTournamentTeams
-);
+tournamentTeamsRoutes.get("/", tournamentTeamControllers.getTournamentTeams);
 
-tournamentTeams.get(
-  "/tournament-teams/:id",
+tournamentTeamsRoutes.get(
+  "/:id",
   tournamentTeamControllers.getTournamentTeamById
 );
 
-tournamentTeams.post(
-  "/tournament-teams/:id/approve",
+tournamentTeamsRoutes.post(
+  "/:id/approve",
   roleMiddleware(["USER"]),
   tournamentTeamControllers.approveTournamentTeam
 );
+
+export default tournamentTeamsRoutes;
