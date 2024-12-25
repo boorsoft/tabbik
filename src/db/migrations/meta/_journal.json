@@ -22,6 +22,13 @@
       "when": 1735126886532,
       "tag": "0002_hard_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1735168857122,
+      "tag": "0003_real_betty_ross",
+      "breakpoints": true
     }
   ]
 }
