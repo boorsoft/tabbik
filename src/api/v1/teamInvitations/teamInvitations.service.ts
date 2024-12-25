@@ -1,14 +1,14 @@
 import { eq, or } from "drizzle-orm";
-import { db } from "../../../db/db";
-import { userTournamentTeamInvitation } from "../../../db/schema/tournament";
+import { db } from "@/db/db";
+import { userTournamentTeamInvitation } from "@/db/schema/tournament";
 import { UserTournamentTeamInvitation } from "./types";
-import { ApiError } from "../../../utils/apiError";
+import { ApiError } from "@/common/utils/apiError";
 
-import * as tournamentService from "../tournaments/tournaments.service";
-import * as tournamentTeamService from "../tournamentTeams/tournamentTeams.service";
-import * as notificationService from "../../../services/notification.service";
-import { NotificationType } from "../../../types/notification";
-import { RequestUser } from "../../../db/schema/user";
+import * as tournamentService from "@/api/v1/tournaments/tournaments.service";
+import * as tournamentTeamService from "@/api/v1/tournamentTeams/tournamentTeams.service";
+import * as notificationService from "@/services/notification.service";
+import { NotificationType } from "@/common/types/notification";
+import { RequestUser } from "@/db/schema/user";
 
 export async function inviteUserToTournament(
   invitationData: UserTournamentTeamInvitation,

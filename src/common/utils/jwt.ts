@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { Config } from "../config/config";
-import { RequestUser } from "../db/schema/user";
+import { Config } from "../../config/config";
+import { RequestUser } from "../../db/schema/user";
 
 export const generateToken = (userData: RequestUser): string => {
   return jwt.sign(userData, Config.secretKey, { expiresIn: "28d" });

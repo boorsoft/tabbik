@@ -1,14 +1,14 @@
 import { eq } from "drizzle-orm";
-import { db } from "../../../db/db";
-import { tournamentTeam } from "../../../db/schema/tournament";
+import { db } from "@/db/db";
+import { tournamentTeam } from "@/db/schema/tournament";
 import { TournamentTeam } from "./types";
-import { ApiError } from "../../../utils/apiError";
+import { ApiError } from "@/common/utils/apiError";
 
-import * as tournamentService from "../tournaments/tournaments.service";
-import { checkOwnership } from "../../../utils/ownership";
+import * as tournamentService from "@v1/tournaments/tournaments.service";
+import { checkOwnership } from "@/common/utils/ownership";
 
-import * as notifcationService from "../../../services/notification.service";
-import { NotificationType } from "../../../types/notification";
+import * as notifcationService from "@/services/notification.service";
+import { NotificationType } from "@/common/types/notification";
 
 export async function getTournamentTeams(tournamentId?: number) {
   if (tournamentId) {

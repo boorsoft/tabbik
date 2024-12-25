@@ -1,8 +1,8 @@
-import extractBearerTokenFromHeaders from "../utils/extractBearerTokenFromHeaders";
+import extractBearerTokenFromHeaders from "../common/utils/extractBearerTokenFromHeaders";
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/apiError";
+import { ApiError } from "../common/utils/apiError";
 import errorMiddleware from "./error.middleware";
-import { verifyToken } from "../utils/jwt";
+import { verifyToken } from "../common/utils/jwt";
 import { RequestUser } from "../db/schema/user";
 
 export const authMiddleware = async (

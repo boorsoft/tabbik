@@ -1,7 +1,7 @@
-import { ApiError } from "../../../utils/apiError";
+import { ApiError } from "../../../common/utils/apiError";
 import { createUser, getUserByUsername } from "../user/user.service";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../../../utils/jwt";
+import { generateToken } from "../../../common/utils/jwt";
 import { UserSelect } from "../user/types";
 
 export async function login(username: string, password: string) {

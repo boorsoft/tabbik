@@ -4,8 +4,8 @@ import {
   IPaginatedResponse,
   IPaginationMetadata,
   ISuccessResponse,
-} from "../types/response";
-import { ApiError } from "../utils/apiError";
+} from "@/common/types/response";
+import { ApiError } from "../common/utils/apiError";
 
 const responseMiddleware = (
   req: Request,

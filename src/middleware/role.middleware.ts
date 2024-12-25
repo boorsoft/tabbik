@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Role } from "../types/role";
-import { ApiError } from "../utils/apiError";
+import { ApiError } from "../common/utils/apiError";
+import { Role } from "@/common/types/role";
 
 export default function roleMiddleware(roles?: Role[]) {
   return (req: Request, res: Response, next: NextFunction) => {

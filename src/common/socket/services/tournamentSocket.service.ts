@@ -1,5 +1,4 @@
 import { Socket } from "socket.io";
-import { RequestUser } from "../../../db/schema/user";
 import { SocketEvents } from "../../../constants/socketEvents";
 
 class TournamentSocketService {

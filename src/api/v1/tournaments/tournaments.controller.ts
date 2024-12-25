@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ApiError } from "../../../utils/apiError";
+import { ApiError } from "../../../common/utils/apiError";
 
 import * as tournamentService from "./tournaments.service";
 

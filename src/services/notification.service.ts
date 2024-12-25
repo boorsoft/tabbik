@@ -1,6 +1,6 @@
 import { SocketEvents } from "../constants/socketEvents";
 import { getIo } from "../common/socket/socket";
-import { INotification } from "../types/notification";
+import { INotification } from "@/common/types/notification";
 
 export async function sendUserNotification(
   data: INotification,

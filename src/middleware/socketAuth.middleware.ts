@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { verifyToken } from "../utils/jwt";
+import { verifyToken } from "../common/utils/jwt";
 
 const socketAuthMiddleware = async (
   socket: Socket,

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/apiError";
+import { ApiError } from "../common/utils/apiError";
 
 const errorMiddleware = (
   err: ApiError | Error,

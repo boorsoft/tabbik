@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import * as teamInvitationService from "./teamInvitations.service";
-import { ApiError } from "../../../utils/apiError";
+import { ApiError } from "@/common/utils/apiError";
 
 export const inviteUserToTournament = async (
   req: Request,
