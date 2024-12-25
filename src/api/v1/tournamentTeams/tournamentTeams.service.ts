@@ -58,7 +58,7 @@ export async function approveTournamentTeam(id: number, userId: number) {
     ];
 
     teamMembers.forEach((member) => {
-      notifcationService.sendNotificationToUser(
+      notifcationService.sendNotification(
         {
           message: `Your team ${approvedTeam[0].title} is approved`,
           type: NotificationType.TOURNAMENT_TEAM_APPROVE,

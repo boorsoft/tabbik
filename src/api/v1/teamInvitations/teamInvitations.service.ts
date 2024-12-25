@@ -5,6 +5,8 @@ import { UserTournamentTeamInvitation } from "./types";
 import { ApiError } from "../../../utils/apiError";
 
 import * as tournamentTeamService from "../tournamentTeams/tournamentTeams.service";
+import * as notificationService from "../../../services/notification.service";
+import { NotificationType } from "../../../types/notification";
 
 export async function inviteUserToTournament(
   invitationData: UserTournamentTeamInvitation
@@ -27,6 +29,14 @@ export async function inviteUserToTournament(
     .insert(userTournamentTeamInvitation)
     .values(invitationData)
     .returning();
+
+  notificationService.sendNotification(
+    {
+      message: "You've got an invitation to a tournament team",
+      type: NotificationType.TOURNAMENT_TEAM_INVITE,
+    },
+    invitationData.receiverId.toString()
+  );
 
   return data[0];
 }
