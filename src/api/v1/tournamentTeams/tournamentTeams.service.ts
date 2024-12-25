@@ -7,6 +7,9 @@ import { ApiError } from "../../../utils/apiError";
 import * as tournamentService from "../tournaments/tournaments.service";
 import { checkOwnership } from "../../../utils/ownership";
 
+import * as notifcationService from "../../../services/notification.service";
+import { NotificationType } from "../../../types/notification";
+
 export async function getTournamentTeams(tournamentId?: number) {
   if (tournamentId) {
     return db.query.tournamentTeam.findMany({
@@ -48,6 +51,21 @@ export async function approveTournamentTeam(id: number, userId: number) {
       .set({ isApproved: true })
       .where(eq(tournamentTeam.id, id))
       .returning();
+
+    const teamMembers = [
+      approvedTeam[0].firstSpeakerId,
+      approvedTeam[0].secondSpeakerId,
+    ];
+
+    teamMembers.forEach((member) => {
+      notifcationService.sendNotificationToUser(
+        {
+          message: `Your team ${approvedTeam[0].title} is approved`,
+          type: NotificationType.TOURNAMENT_TEAM_APPROVE,
+        },
+        member.toString()
+      );
+    });
 
     return approvedTeam[0];
   }
