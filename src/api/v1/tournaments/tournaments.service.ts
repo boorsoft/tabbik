@@ -18,13 +18,15 @@ export async function getTournaments(
 }
 
 export async function getTournamentById(id: number) {
-  return db.query.tournament.findFirst({
+  const data = await db.query.tournament.findFirst({
     where: eq(tournament.id, id),
     with: {
       judges: true,
       teams: true,
     },
   });
+
+  return data?.[0] as Tournament;
 }
 
 export async function createTournament(data: Tournament) {
