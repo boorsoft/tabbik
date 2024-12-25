@@ -16,12 +16,7 @@ export async function createUser(userData: UserInsert) {
 }
 
 export async function getUserByUsername(username: string) {
-  const { password, ...rest } = getTableColumns(user);
-
-  const data = await db
-    .select({ ...rest })
-    .from(user)
-    .where(eq(user.username, username));
+  const data = await db.select().from(user).where(eq(user.username, username));
 
   return data[0];
 }

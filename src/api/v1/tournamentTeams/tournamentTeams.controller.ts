@@ -69,9 +69,12 @@ export const approveTournamentTeam = async (
   try {
     if (!id) return next(new ApiError("Tournament team id not provided", 400));
 
+    if (!req.user?.id)
+      return next(new ApiError("Could not find current user", 404));
+
     const approvedTeam = await tournamentTeamService.approveTournamentTeam(
       +id!,
-      req.user?.id
+      req.user.id
     );
 
     return res.success(approvedTeam, "Team approved sucessfully!");

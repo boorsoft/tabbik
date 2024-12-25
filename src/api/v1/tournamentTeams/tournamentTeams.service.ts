@@ -29,7 +29,7 @@ export async function createTournamentTeam(data: TournamentTeam) {
   return newTeam[0];
 }
 
-export async function approveTournamentTeam(id: number, userId?: number) {
+export async function approveTournamentTeam(id: number, userId: number) {
   const currentTeam = await getTournamentTeamById(id);
 
   if (currentTeam) {
@@ -41,14 +41,16 @@ export async function approveTournamentTeam(id: number, userId?: number) {
       currentTeam.tournamentId
     );
 
-    checkOwnership(+userId!, tournament.ownerId);
+    checkOwnership(userId, tournament.ownerId);
+
+    const approvedTeam = await db
+      .update(tournamentTeam)
+      .set({ isApproved: true })
+      .where(eq(tournamentTeam.id, id))
+      .returning();
+
+    return approvedTeam[0];
   }
 
-  const approvedTeam = await db
-    .update(tournamentTeam)
-    .set({ isApproved: true })
-    .where(eq(tournamentTeam.id, id))
-    .returning();
-
-  return approvedTeam[0];
+  throw new ApiError("Team not found", 404);
 }

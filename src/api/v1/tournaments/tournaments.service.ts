@@ -26,7 +26,7 @@ export async function getTournamentById(id: number) {
     },
   });
 
-  return data?.[0] as Tournament;
+  return data as Tournament;
 }
 
 export async function createTournament(data: Tournament) {
