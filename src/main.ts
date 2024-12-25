@@ -5,6 +5,7 @@ import express, {
   Response,
   urlencoded,
 } from "express";
+import { createServer } from "node:http";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -14,10 +15,15 @@ import cors from "cors";
 import api from "./api/v1";
 import errorMiddleware from "./middleware/error.middleware";
 import responseMiddleware from "./middleware/response.middleware";
+import { initSocket } from "./socket";
 
 dotenv.config();
 
 const app: Application = express();
+
+const server = createServer(app);
+
+initSocket(server);
 
 const port: number = 3000;
 
@@ -44,6 +50,6 @@ app.use("/api/v1", api);
 
 app.use(errorMiddleware);
 
-app.listen(port, function () {
-  console.log(`App is listening on port ${port} !`);
+server.listen(port, function () {
+  console.log(`Server is listening on port ${port} !`);
 });
