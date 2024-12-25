@@ -23,10 +23,17 @@ export const signup = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, firstName, lastName, isNovice } = req.body;
 
   try {
-    const user = await authService.signup(username, email, password);
+    const user = await authService.signup(
+      username,
+      email,
+      password,
+      firstName,
+      lastName,
+      isNovice
+    );
 
     return res.success(user, "User signup successful");
   } catch (e) {

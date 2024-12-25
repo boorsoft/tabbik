@@ -10,6 +10,7 @@ export async function createUser(userData: UserInsert) {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    isNovice: user.isNovice,
   });
 
   return data[0];

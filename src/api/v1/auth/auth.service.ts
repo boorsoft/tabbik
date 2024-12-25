@@ -20,7 +20,10 @@ export async function login(username: string, password: string) {
 export async function signup(
   username: string,
   email: string,
-  password: string
+  password: string,
+  firstName: string,
+  lastName: string,
+  isNovice: boolean = false
 ) {
   const user: UserSelect = await getUserByUsername(username);
 
@@ -28,7 +31,14 @@ export async function signup(
 
   const hash = await bcrypt.hash(password, 10);
 
-  const newUser = await createUser({ username, email, password: hash });
+  const newUser = await createUser({
+    username,
+    email,
+    password: hash,
+    firstName,
+    lastName,
+    isNovice,
+  });
 
   return newUser;
 }

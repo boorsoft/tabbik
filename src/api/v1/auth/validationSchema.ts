@@ -11,4 +11,5 @@ export const signupValidationSchema = z.object({
   email: z.string().email("Invalid email format"),
   firstName: z.string(),
   lastName: z.string(),
+  isNovice: z.boolean().default(false),
 });
