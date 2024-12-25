@@ -1,8 +1,9 @@
 import { Server as HTTPServer } from "node:http";
 import { Server } from "socket.io";
-import socketAuthMiddleware from "./middleware/socketAuth.middleware";
-import { User } from "./db/schema/user";
-import { SocketEvents } from "./constants/socketEvents";
+import socketAuthMiddleware from "../../middleware/socketAuth.middleware";
+import { User } from "../../db/schema/user";
+import { SocketEvents } from "../../constants/socketEvents";
+import SocketManager from "./socketManager";
 
 let io: Server | null = null;
 
@@ -16,11 +17,10 @@ export const initSocket = (server: HTTPServer): Server => {
 
     console.log(`User connected with ID: ${user.id}`);
 
-    socket.join(user.id.toString());
+    const socketManager = SocketManager.init(socket);
 
-    socket.on(SocketEvents.DISCONNECT, () => {
-      console.log(`User ${user.id} disconnected`);
-    });
+    socketManager.handleUserEvents(user);
+    socketManager.handleTournamentEvents();
   });
 
   return io;

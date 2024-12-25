@@ -8,11 +8,16 @@ export const inviteUserToTournament = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (!req.user) return;
+
   try {
-    const teamInvitation = await teamInvitationService.inviteUserToTournament({
-      ...req.body,
-      inviterId: req.user?.id,
-    });
+    const teamInvitation = await teamInvitationService.inviteUserToTournament(
+      {
+        ...req.body,
+        inviterId: req.user?.id,
+      },
+      req.user
+    );
 
     return res.success(teamInvitation);
   } catch (e) {

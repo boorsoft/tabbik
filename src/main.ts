@@ -15,7 +15,7 @@ import cors from "cors";
 import api from "./api/v1";
 import errorMiddleware from "./middleware/error.middleware";
 import responseMiddleware from "./middleware/response.middleware";
-import { initSocket } from "./socket";
+import { initSocket } from "./common/socket/socket";
 
 dotenv.config();
 

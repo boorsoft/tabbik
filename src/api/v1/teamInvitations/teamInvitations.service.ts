@@ -4,12 +4,15 @@ import { userTournamentTeamInvitation } from "../../../db/schema/tournament";
 import { UserTournamentTeamInvitation } from "./types";
 import { ApiError } from "../../../utils/apiError";
 
+import * as tournamentService from "../tournaments/tournaments.service";
 import * as tournamentTeamService from "../tournamentTeams/tournamentTeams.service";
 import * as notificationService from "../../../services/notification.service";
 import { NotificationType } from "../../../types/notification";
+import { RequestUser } from "../../../db/schema/user";
 
 export async function inviteUserToTournament(
-  invitationData: UserTournamentTeamInvitation
+  invitationData: UserTournamentTeamInvitation,
+  user: RequestUser
 ) {
   const invitations = await db.query.userTournamentTeamInvitation.findFirst({
     where: or(
@@ -30,10 +33,22 @@ export async function inviteUserToTournament(
     .values(invitationData)
     .returning();
 
-  notificationService.sendNotification(
+  const invitationTournament = await tournamentService.getTournamentById(
+    invitationData.tournamentId
+  );
+
+  if (!invitationTournament) {
+    throw new ApiError(
+      "Tournament which the invite was sent to is not found",
+      404
+    );
+  }
+
+  notificationService.sendUserNotification(
     {
-      message: "You've got an invitation to a tournament team",
+      message: `${user.username} invited you to join the team ${invitationData.teamTitle} in tournament ${invitationTournament.title}`,
       type: NotificationType.TOURNAMENT_TEAM_INVITE,
+      data: { userId: user.id, tournamentId: invitationTournament.id },
     },
     invitationData.receiverId.toString()
   );

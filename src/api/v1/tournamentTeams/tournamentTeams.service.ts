@@ -44,6 +44,8 @@ export async function approveTournamentTeam(id: number, userId: number) {
       currentTeam.tournamentId
     );
 
+    if (!tournament) throw new ApiError("Team approval is failed", 400);
+
     checkOwnership(userId, tournament.ownerId);
 
     const approvedTeam = await db
@@ -58,10 +60,14 @@ export async function approveTournamentTeam(id: number, userId: number) {
     ];
 
     teamMembers.forEach((member) => {
-      notifcationService.sendNotification(
+      notifcationService.sendUserNotification(
         {
           message: `Your team ${approvedTeam[0].title} is approved`,
           type: NotificationType.TOURNAMENT_TEAM_APPROVE,
+          data: {
+            tournamentId: tournament.id,
+            team: approvedTeam[0].id,
+          },
         },
         member.toString()
       );

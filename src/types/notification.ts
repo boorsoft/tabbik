@@ -5,5 +5,6 @@ export enum NotificationType {
 
 export interface INotification {
   message: string;
+  data: Record<string, any> | null;
   type: NotificationType;
 }
