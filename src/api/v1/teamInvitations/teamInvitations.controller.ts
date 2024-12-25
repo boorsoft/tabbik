@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
 import * as teamInvitationService from "./teamInvitations.service";
-import * as tournamentTeamService from "../tournamentTeams/tournamentTeams.service";
 import { ApiError } from "../../../utils/apiError";
 
 export const inviteUserToTournament = async (
@@ -47,8 +46,10 @@ export const acceptTeamInvitation = async (
   const { id } = req.params;
 
   try {
+    if (!id) return next(new ApiError("Team invitation id not provided", 400));
+
     const currentInvitation = await teamInvitationService.getTeamInvitationById(
-      +id!
+      +id
     );
 
     if (req.user?.id !== currentInvitation?.receiverId) {
@@ -56,14 +57,9 @@ export const acceptTeamInvitation = async (
       return;
     }
 
-    const invitation = await teamInvitationService.acceptInvitation(+id!);
-
-    const team = await tournamentTeamService.createTournamentTeam({
-      tournamentId: invitation.tournamentId,
-      firstSpeakerId: invitation.inviterId,
-      secondSpeakerId: invitation.receiverId,
-      title: invitation.teamTitle,
-    });
+    const { invitation, team } = await teamInvitationService.acceptInvitation(
+      +id!
+    );
 
     return res.success({ invitation, team });
   } catch (e) {

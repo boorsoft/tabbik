@@ -4,6 +4,8 @@ import { userTournamentTeamInvitation } from "../../../db/schema/tournament";
 import { UserTournamentTeamInvitation } from "./types";
 import { ApiError } from "../../../utils/apiError";
 
+import * as tournamentTeamService from "../tournamentTeams/tournamentTeams.service";
+
 export async function inviteUserToTournament(
   invitationData: UserTournamentTeamInvitation
 ) {
@@ -66,13 +68,34 @@ export async function getUserTeamInvitations(userId: number) {
 }
 
 export async function acceptInvitation(invitationId: number) {
+  const currentInvitation = await getTeamInvitationById(invitationId);
+
+  if (!currentInvitation) throw new ApiError("Invitation not found", 404);
+
+  const existingTeams = await tournamentTeamService.getTournamentTeams(
+    currentInvitation.tournamentId
+  );
+
+  if (
+    existingTeams.some((team) => team.title === currentInvitation.teamTitle)
+  ) {
+    throw new ApiError("Team already exists", 400);
+  }
+
   const data = await db
     .update(userTournamentTeamInvitation)
     .set({ isAccepted: true })
     .where(eq(userTournamentTeamInvitation.id, invitationId))
     .returning();
 
-  return data[0];
+  const team = await tournamentTeamService.createTournamentTeam({
+    tournamentId: currentInvitation.tournamentId,
+    firstSpeakerId: currentInvitation.inviterId,
+    secondSpeakerId: currentInvitation.receiverId,
+    title: currentInvitation.teamTitle,
+  });
+
+  return { invitation: data[0], team };
 }
 
 export async function cancelOrRejectInvitation(invitationId: number) {

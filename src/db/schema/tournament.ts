@@ -50,7 +50,7 @@ export const tournamentTeam = pgTable(
   "tournament_team",
   {
     id: serial("id").primaryKey(),
-    title: varchar("title", { length: 160 }),
+    title: varchar("title", { length: 160 }).unique().notNull(),
     firstSpeakerId: integer("firstSpeakerId")
       .references(() => user.id, { onDelete: "cascade" })
       .notNull(),

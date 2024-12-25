@@ -1,5 +1,6 @@
 import { InferSelectModel } from "drizzle-orm";
 import {
+  boolean,
   pgEnum,
   pgTable,
   serial,
@@ -18,6 +19,7 @@ export const user = pgTable("user", {
   firstName: varchar("firstName", { length: 100 }),
   lastName: varchar("lastName", { length: 100 }),
   role: role("role").default("USER").notNull(),
+  isNovice: boolean("isNovice").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAT: timestamp("updatedAt").defaultNow().notNull(),
 });

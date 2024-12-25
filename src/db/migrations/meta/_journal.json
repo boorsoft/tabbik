@@ -15,6 +15,13 @@
       "when": 1734991779698,
       "tag": "0001_mean_gamora",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1735126886532,
+      "tag": "0002_hard_mister_fear",
+      "breakpoints": true
     }
   ]
 }
