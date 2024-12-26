@@ -1,10 +1,11 @@
-import { count, eq, getTableColumns } from "drizzle-orm";
+import { count, eq, getTableColumns, ilike, or } from "drizzle-orm";
 import { db } from "@/db/db";
 import { user } from "@/db/schema/user";
 import { UserInsert } from "./types";
 import paginate from "@/common/utils/pagination";
 import { PaginationParams } from "@/common/types/pagination";
 import { DEFAULT_PAGE_SIZE } from "@/constants/common";
+import { UserFilters } from "./filters";
 
 export async function createUser(userData: UserInsert) {
   const data = await db.insert(user).values(userData).returning({
@@ -19,15 +20,22 @@ export async function createUser(userData: UserInsert) {
   return data[0];
 }
 
-export async function getUsers({
-  page = 1,
-  size = DEFAULT_PAGE_SIZE,
-}: PaginationParams = {}) {
+export async function getUsers(
+  { page = 1, size = DEFAULT_PAGE_SIZE }: PaginationParams = {},
+  filters?: UserFilters
+) {
   const { offset, limit } = paginate({ page, size });
 
   const data = await db.query.user.findMany({
     offset,
     limit,
+    where: filters?.search
+      ? or(
+          ilike(user.username, `%${filters.search}%`),
+          ilike(user.firstName, `%${filters.search}%`),
+          ilike(user.lastName, `%${filters.search}%`)
+        )
+      : undefined,
     orderBy: (user, { asc }) => asc(user.id),
   });
 

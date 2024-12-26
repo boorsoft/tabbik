@@ -50,13 +50,16 @@ export const getUsers = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { page, size } = req.query;
+  const { page, size, search } = req.query;
 
   try {
-    const { data: users, paginationMetadata } = await userService.getUsers({
-      page: page ? +page : undefined,
-      size: size ? +size : undefined,
-    });
+    const { data: users, paginationMetadata } = await userService.getUsers(
+      {
+        page: page ? +page : undefined,
+        size: size ? +size : undefined,
+      },
+      { search: search?.toString() }
+    );
 
     res.paginated(users, paginationMetadata);
   } catch (e) {

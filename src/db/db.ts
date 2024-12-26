@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Config } from "../config/config";
+import { Config } from "../common/config";
 import { Pool } from "pg";
 
 import * as tournamentSchema from "./schema/tournament";

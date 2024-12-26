@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Config } from "../../config/config";
+import { Config } from "../config";
 import { RequestUser } from "../../db/schema/user";
 
 export const generateToken = (userData: RequestUser): string => {

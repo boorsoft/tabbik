@@ -76,6 +76,7 @@ export async function getUserTeamInvitations(userId: number) {
           avatar: true,
           firstName: true,
           lastName: true,
+          isNovice: true,
         },
       },
       receiver: {
@@ -85,6 +86,7 @@ export async function getUserTeamInvitations(userId: number) {
           avatar: true,
           firstName: true,
           lastName: true,
+          isNovice: true,
         },
       },
       tournament: { columns: { id: true, title: true, startDate: true } },
