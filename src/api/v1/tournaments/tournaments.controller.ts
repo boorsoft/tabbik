@@ -12,9 +12,13 @@ export const getTournaments = async (
   const { page, size } = req.query;
 
   try {
-    const tournaments = await tournamentService.getTournaments(+page!, +size!);
+    const { tournaments, paginationMetadata } =
+      await tournamentService.getTournaments(
+        page ? +page : undefined,
+        size ? +size : undefined
+      );
 
-    return res.success(tournaments);
+    return res.paginated(tournaments, paginationMetadata);
   } catch (e) {
     next(e);
   }

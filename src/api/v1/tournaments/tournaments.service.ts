@@ -1,20 +1,38 @@
-import { eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { tournament } from "../../../db/schema/tournament";
 import { Tournament } from "./types";
 import { db } from "../../../db/db";
 import { DEFAULT_PAGE_SIZE } from "../../../constants/common";
 import { tournamentFilterSchema } from "./validationSchema";
+import paginate from "@/common/utils/pagination";
+import { IPaginationMetadata } from "@/common/types/response";
 
 export async function getTournaments(
   page: number = 1,
   size: number = DEFAULT_PAGE_SIZE,
   filters?: typeof tournamentFilterSchema
 ) {
-  return db
+  const { offset, limit } = paginate({ page, size });
+
+  const tournaments = await db
     .select()
     .from(tournament)
-    .limit(size)
-    .offset((page - 1) * size);
+    .orderBy(desc(tournament.id))
+    .limit(limit)
+    .offset(offset);
+
+  const totalTournaments = await db.select({ count: count() }).from(tournament);
+
+  const totalData = totalTournaments[0].count;
+
+  const paginationMetadata: IPaginationMetadata = {
+    page,
+    size,
+    totalData,
+    totalPages: Math.ceil(totalData / size),
+  };
+
+  return { tournaments, paginationMetadata };
 }
 
 export async function getTournamentById(id: number) {
