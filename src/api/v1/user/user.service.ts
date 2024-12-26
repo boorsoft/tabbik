@@ -1,7 +1,10 @@
-import { eq, getTableColumns } from "drizzle-orm";
-import { db } from "../../../db/db";
-import { user } from "../../../db/schema/user";
+import { count, eq, getTableColumns } from "drizzle-orm";
+import { db } from "@/db/db";
+import { user } from "@/db/schema/user";
 import { UserInsert } from "./types";
+import paginate from "@/common/utils/pagination";
+import { PaginationParams } from "@/common/types/pagination";
+import { DEFAULT_PAGE_SIZE } from "@/constants/common";
 
 export async function createUser(userData: UserInsert) {
   const data = await db.insert(user).values(userData).returning({
@@ -14,6 +17,32 @@ export async function createUser(userData: UserInsert) {
   });
 
   return data[0];
+}
+
+export async function getUsers({
+  page = 1,
+  size = DEFAULT_PAGE_SIZE,
+}: PaginationParams = {}) {
+  const { offset, limit } = paginate({ page, size });
+
+  const data = await db.query.user.findMany({
+    offset,
+    limit,
+    orderBy: (user, { asc }) => asc(user.id),
+  });
+
+  const dataCount = await db.select({ count: count() }).from(user);
+
+  const totalData = dataCount[0].count;
+
+  const paginationMetadata = {
+    totalData,
+    page,
+    size,
+    totalPages: Math.ceil(totalData / size),
+  };
+
+  return { data, paginationMetadata };
 }
 
 export async function getUserByUsername(username: string) {

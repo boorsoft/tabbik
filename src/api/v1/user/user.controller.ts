@@ -44,3 +44,22 @@ export const getCurrentUser = async (
     next(e);
   }
 };
+
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { page, size } = req.query;
+
+  try {
+    const { data: users, paginationMetadata } = await userService.getUsers({
+      page: page ? +page : undefined,
+      size: size ? +size : undefined,
+    });
+
+    res.paginated(users, paginationMetadata);
+  } catch (e) {
+    next(e);
+  }
+};
