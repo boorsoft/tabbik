@@ -12,6 +12,6 @@ RUN chmod +x ./run-migrations.sh
 
 EXPOSE 3000
 
-ENTRYPOINT [ "./run-migrations.sh" ]
+ENTRYPOINT ["sh", "./run-migrations.sh" ]
 
 CMD [ "npm", "run", "dev" ]

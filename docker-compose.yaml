@@ -21,7 +21,7 @@ services:
     container_name: postgres_container
     restart: always
     ports:
-      - 5430:5430
+      - ${PGPORT}:${PGPORT}
     volumes:
       - db_data:/var/lib/postgresql/data
     env_file:
@@ -30,7 +30,7 @@ services:
       POSTGRES_USER: ${PGUSER}
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_DB: ${PGDATABASE}
-    command: -p 5430
+    command: -p ${PGPORT}
 
   redis:
     container_name: redis_container
