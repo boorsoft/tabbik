@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Tabbik API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local dev server
+paths:
+  /auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        description: Login
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login success response
+          content:
+            application/json:
+              example:
+                success: true
+                message: "Authorization successful"
+                data:
+                  token: "tokenstring"
+                error: null
+
+  /auth/signup:
+    post:
+      summary: Signup a user
+      requestBody:
+        description: Signup
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+      responses:
+        '200':
+          description: Signup success response
+          content:
+            application/json:
+              example:
+                success: true
+                message: "User signup successful"
+                data:
+                  username: "tabbist"
+                  firstName: "John"
+                  lastName: "Doe"
+                  isNovice: false
+                  email: "johndoe@mail.com"
+                error: null
+
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+          example: tabbist
+        password:
+          type: string
+          example: 123456
+      
+    Signup:
+      type: object
+      properties:
+        username:
+          type: string
+          example: tabbist
+        password:
+          type: string
+          example: 123456
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        isNovice:
+          type: boolean
+          example: false
+        email:
+          type: string
+          example: johndoe@mail.com
