@@ -36,7 +36,7 @@ export async function approveTournamentTeam(id: number, userId: number) {
   const currentTeam = await getTournamentTeamById(id);
 
   if (currentTeam) {
-    if (currentTeam.isApproved) {
+    if (currentTeam.status === "APPROVED") {
       throw new ApiError("The team is already approved!", 400);
     }
 
@@ -50,7 +50,7 @@ export async function approveTournamentTeam(id: number, userId: number) {
 
     const approvedTeam = await db
       .update(tournamentTeam)
-      .set({ isApproved: true })
+      .set({ status: "APPROVED" })
       .where(eq(tournamentTeam.id, id))
       .returning();
 
