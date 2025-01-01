@@ -12,12 +12,11 @@ export const createTournamentSchema = createInsertSchema(tournament, {
 }).omit({
   ownerId: true,
   isActive: true,
-  isRunning: true,
+  status: true,
 });
 
 export const tournamentFilterSchema = z.object({
   title: z.string().optional(),
   owner: z.number().positive().optional(),
   isActive: z.boolean().optional(),
-  isRunning: z.boolean().optional(),
 });

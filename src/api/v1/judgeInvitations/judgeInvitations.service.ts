@@ -11,14 +11,10 @@ import * as tournamentService from "@v1/tournaments/tournaments.service";
 import { checkOwnership } from "@/common/utils/ownership";
 
 export default class JudgeInvitationService {
-  private user: RequestUser;
+  constructor() {}
 
-  constructor(user: RequestUser) {
-    this.user = user;
-  }
-
-  static init(user: RequestUser) {
-    return new JudgeInvitationService(user);
+  static init() {
+    return new JudgeInvitationService();
   }
 
   async getInvitationById(id: number) {
@@ -27,14 +23,28 @@ export default class JudgeInvitationService {
     });
   }
 
-  async inviteToTournament(judgeId: number, tournamentId: number) {
+  async getUserInvitations(user: RequestUser) {
+    return db.query.tournamentJudgeInvitation.findMany({
+      where: eq(tournamentJudgeInvitation.judgeId, user.id),
+      with: {
+        tournament: true,
+        judge: true,
+      },
+    });
+  }
+
+  async inviteToTournament(
+    judgeId: number,
+    tournamentId: number,
+    user: RequestUser
+  ) {
     const tournament = await tournamentService.getTournamentById(tournamentId);
 
     if (!tournament) {
       throw new ApiError("Tournament doesn't exist", 404);
     }
 
-    if (tournament.ownerId !== this.user.id) {
+    if (tournament.ownerId !== user.id) {
       throw new ApiError(
         "You're not allowed to invite judges to this tournament",
         403
@@ -67,12 +77,12 @@ export default class JudgeInvitationService {
     return data[0];
   }
 
-  async acceptInvitation(invitationId: number) {
+  async acceptInvitation(invitationId: number, user: RequestUser) {
     const invitation = await this.getInvitationById(invitationId);
 
     if (!invitation) throw new ApiError("Invitation not found", 404);
 
-    if (invitation.judgeId !== this.user.id) {
+    if (invitation.judgeId !== user.id) {
       throw new ApiError("You are not allowed to perform this action", 403);
     }
 
@@ -85,7 +95,7 @@ export default class JudgeInvitationService {
     return data[0];
   }
 
-  async cancelInvitation(invitationId: number) {
+  async cancelInvitation(invitationId: number, user: RequestUser) {
     const invitation = await this.getInvitationById(invitationId);
 
     if (!invitation) {
@@ -98,21 +108,21 @@ export default class JudgeInvitationService {
 
     if (!tournament) throw new ApiError("Tournament doesn't exist", 404);
 
-    checkOwnership(this.user.id, tournament.ownerId);
+    checkOwnership(user.id, tournament.ownerId);
 
     return db
       .delete(tournamentJudgeInvitation)
       .where(eq(tournamentJudgeInvitation.id, invitationId));
   }
 
-  async rejectInvitation(invitationId: number) {
+  async rejectInvitation(invitationId: number, user: RequestUser) {
     const invitation = await this.getInvitationById(invitationId);
 
     if (!invitation) {
       throw new ApiError("Invitation not found", 404);
     }
 
-    checkOwnership(this.user.id, invitation.judgeId);
+    checkOwnership(user.id, invitation.judgeId);
 
     const data = await db
       .update(tournamentJudgeInvitation)

@@ -32,7 +32,7 @@ teamInvitations.delete(
   teamInvitationController.cancelTeamInvitation
 );
 
-teamInvitations.delete(
+teamInvitations.post(
   "/:id/reject",
   roleMiddleware(["USER"]),
   teamInvitationController.rejectTeamInvitation
