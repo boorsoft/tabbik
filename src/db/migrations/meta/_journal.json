@@ -43,6 +43,13 @@
       "when": 1735762842023,
       "tag": "0005_wakeful_mindworm",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735764397414,
+      "tag": "0006_sharp_ricochet",
+      "breakpoints": true
     }
   ]
 }

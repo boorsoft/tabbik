@@ -198,12 +198,16 @@ export const tournamentJudgeInvitation = pgTable(
   "tournament_judge_invitation",
   {
     id: serial("id").primaryKey(),
-    tournamentId: integer("tournamentId").references(() => tournament.id, {
-      onDelete: "cascade",
-    }),
-    judgeId: integer("judgeId").references(() => user.id, {
-      onDelete: "cascade",
-    }),
+    tournamentId: integer("tournamentId")
+      .references(() => tournament.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    judgeId: integer("judgeId")
+      .references(() => user.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     status: invitationStatus("status").default("PENDING").notNull(),
   }
 );

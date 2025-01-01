@@ -132,8 +132,10 @@ export async function cancelTeamInvitation(invitationId: number) {
 }
 
 export async function rejectTeamInvitation(invitationId: number) {
-  return db
+  const data = await db
     .update(userTournamentTeamInvitation)
     .set({ status: "REJECTED" })
     .where(eq(userTournamentTeamInvitation.id, invitationId));
+
+  return data[0];
 }
