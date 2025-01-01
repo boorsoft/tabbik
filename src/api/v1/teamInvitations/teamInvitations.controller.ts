@@ -96,7 +96,7 @@ export const cancelTeamInvitation = async (
       return;
     }
 
-    await teamInvitationService.cancelOrRejectInvitation(+id!);
+    await teamInvitationService.cancelTeamInvitation(+id!);
 
     return res.success(null, "Invitation cancelled successfully");
   } catch (e) {
@@ -128,7 +128,7 @@ export const rejectTeamInvitation = async (
       return;
     }
 
-    await teamInvitationService.cancelOrRejectInvitation(+id!);
+    await teamInvitationService.rejectTeamInvitation(+id!);
 
     return res.success(null, "Invitation rejected successfully");
   } catch (e) {

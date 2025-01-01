@@ -19,6 +19,26 @@ export const tournamentRoomPosition = pgEnum("tournamentRoomPosition", [
   "CLOSING_OPPOSITION",
 ]);
 
+export const tournamentStatus = pgEnum("tournamentStatus", [
+  "RUNNING",
+  "PENDING",
+  "FINISHED",
+  "CANCELED",
+  "HIDDEN",
+]);
+
+export const invitationStatus = pgEnum("invitationStatus", [
+  "ACCEPTED",
+  "REJECTED",
+  "PENDING",
+]);
+
+export const teamJoinRequestStatus = pgEnum("teamJoinRequestStatus", [
+  "APPROVED",
+  "REJECTED",
+  "PENDING",
+]);
+
 export const tournament = pgTable(
   "tournament",
   {
@@ -35,11 +55,11 @@ export const tournament = pgTable(
     maxTeams: integer("maxTeams").notNull(),
     registrationFee: integer("registrationFee").notNull(),
     isActive: boolean("isActive").default(true),
-    isRunning: boolean("isRunning").default(false),
-    startDate: timestamp("startDate").defaultNow(),
+    status: tournamentStatus("status").default("PENDING").notNull(),
+    startDate: timestamp("startDate"),
     endDate: timestamp("endDate"),
-    createdAt: timestamp("createdAt").defaultNow(),
-    updatedAT: timestamp("updatedAt").defaultNow(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAT: timestamp("updatedAt").defaultNow().notNull(),
   },
   (table) => ({
     titleIdx: index("tournamentTitleIdx").on(table.title),
@@ -60,7 +80,7 @@ export const tournamentTeam = pgTable(
     tournamentId: integer("tournamentId")
       .references(() => tournament.id, { onDelete: "cascade" })
       .notNull(),
-    isApproved: boolean("isApproved").default(false),
+    status: teamJoinRequestStatus("status").default("PENDING").notNull(),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAT: timestamp("updatedAt").defaultNow(),
   },
@@ -174,6 +194,20 @@ export const tournamentRoomTeam = pgTable("tournament_room_team", {
   updatedAT: timestamp("updatedAt").defaultNow(),
 });
 
+export const tournamentJudgeInvitation = pgTable(
+  "tournament_judge_invitation",
+  {
+    id: serial("id").primaryKey(),
+    tournamentId: integer("tournamentId").references(() => tournament.id, {
+      onDelete: "cascade",
+    }),
+    judgeId: integer("judgeId").references(() => user.id, {
+      onDelete: "cascade",
+    }),
+    status: invitationStatus("status").default("PENDING").notNull(),
+  }
+);
+
 export const userTournamentTeamInvitation = pgTable(
   "user_tournament_team_invitation",
   {
@@ -188,7 +222,7 @@ export const userTournamentTeamInvitation = pgTable(
       .references(() => tournament.id)
       .notNull(),
     teamTitle: varchar("teamTitle", { length: 130 }).notNull(),
-    isAccepted: boolean("isAccepted").default(false),
+    status: invitationStatus("status").default("PENDING").notNull(),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAT: timestamp("updatedAt").defaultNow(),
   }
@@ -326,6 +360,20 @@ export const userTournamentTeamInvitationRelations = relations(
     }),
     receiver: one(user, {
       fields: [userTournamentTeamInvitation.receiverId],
+      references: [user.id],
+    }),
+  })
+);
+
+export const tournamentJudgeInvitationRelations = relations(
+  tournamentJudgeInvitation,
+  ({ one }) => ({
+    tournament: one(tournament, {
+      fields: [tournamentJudgeInvitation.tournamentId],
+      references: [tournament.id],
+    }),
+    judge: one(user, {
+      fields: [tournamentJudgeInvitation.judgeId],
       references: [user.id],
     }),
   })

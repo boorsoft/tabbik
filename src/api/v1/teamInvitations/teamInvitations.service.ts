@@ -111,7 +111,7 @@ export async function acceptInvitation(invitationId: number) {
 
   const data = await db
     .update(userTournamentTeamInvitation)
-    .set({ isAccepted: true })
+    .set({ status: "ACCEPTED" })
     .where(eq(userTournamentTeamInvitation.id, invitationId))
     .returning();
 
@@ -125,8 +125,15 @@ export async function acceptInvitation(invitationId: number) {
   return { invitation: data[0], team };
 }
 
-export async function cancelOrRejectInvitation(invitationId: number) {
+export async function cancelTeamInvitation(invitationId: number) {
   return db
     .delete(userTournamentTeamInvitation)
+    .where(eq(userTournamentTeamInvitation.id, invitationId));
+}
+
+export async function rejectTeamInvitation(invitationId: number) {
+  return db
+    .update(userTournamentTeamInvitation)
+    .set({ status: "REJECTED" })
     .where(eq(userTournamentTeamInvitation.id, invitationId));
 }
