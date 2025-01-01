@@ -8,6 +8,8 @@ servers:
 paths:
   /auth/login:
     post:
+      tags:
+        - auth
       summary: Login a user
       requestBody:
         description: Login
@@ -30,6 +32,8 @@ paths:
 
   /auth/signup:
     post:
+      tags:
+        - auth
       summary: Signup a user
       requestBody:
         description: Signup

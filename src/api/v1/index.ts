@@ -9,6 +9,8 @@ import tournamentTeamsRoutes from "./tournamentTeams/tournamentTeams.routes";
 import userRoutes from "./user/user.routes";
 import yaml from "js-yaml";
 import { readFileSync } from "fs";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerOptions from "@/common/swagger.config";
 
 const api = Router();
 
@@ -16,6 +18,8 @@ const apiDocs = yaml.load(readFileSync("openapi.yaml", "utf8")) as Record<
   string,
   unknown
 >;
+
+// const apiDocs = swaggerJSDoc(swaggerOptions);
 
 api.use("/docs", swaggerUi.serve);
 api.get("/docs", swaggerUi.setup(apiDocs));
