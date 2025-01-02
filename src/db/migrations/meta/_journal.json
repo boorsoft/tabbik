@@ -50,6 +50,13 @@
       "when": 1735764397414,
       "tag": "0006_sharp_ricochet",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1735860101875,
+      "tag": "0007_hot_ken_ellis",
+      "breakpoints": true
     }
   ]
 }

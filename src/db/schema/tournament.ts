@@ -11,6 +11,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "./user";
+import { motion } from "./motion";
 
 export const tournamentRoomPosition = pgEnum("tournamentRoomPosition", [
   "OPENING_GOVERNMENT",
@@ -20,7 +21,7 @@ export const tournamentRoomPosition = pgEnum("tournamentRoomPosition", [
 ]);
 
 export const tournamentStatus = pgEnum("tournamentStatus", [
-  "RUNNING",
+  "IN_PROGRESS",
   "PENDING",
   "FINISHED",
   "CANCELED",
@@ -39,6 +40,13 @@ export const teamJoinRequestStatus = pgEnum("teamJoinRequestStatus", [
   "PENDING",
 ]);
 
+export const roundStatus = pgEnum("roundStatus", [
+  "PENDING",
+  "IN_PROGRESS",
+  "FEEDBACKING",
+  "FINISHED",
+]);
+
 export const tournament = pgTable(
   "tournament",
   {
@@ -49,7 +57,7 @@ export const tournament = pgTable(
     location: varchar("location", { length: 256 }).notNull(),
     ownerId: integer("ownerId")
       .references(() => user.id, {
-        onDelete: "cascade",
+        onDelete: "no action",
       })
       .notNull(),
     maxTeams: integer("maxTeams").notNull(),
@@ -139,8 +147,8 @@ export const tournamentRound = pgTable(
   {
     id: serial("id").primaryKey(),
     round: integer("round").notNull(),
-    resolution: text("resolution").notNull(),
-    isClosed: boolean("isClosed").default(false),
+    motionId: integer("motionId").references(() => motion.id),
+    status: roundStatus("status").default("PENDING"),
     tournamentId: integer("tournamentId")
       .references(() => tournament.id, {
         onDelete: "cascade",
@@ -149,7 +157,7 @@ export const tournamentRound = pgTable(
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAT: timestamp("updatedAt").defaultNow(),
   },
-  (table) => ({ resolutionIdx: index("resolutionIdx").on(table.resolution) })
+  (table) => ({ resolutionIdx: index("resolutionIdx").on(table.motionId) })
 );
 
 export const tournamentRoundPoint = pgTable("tournament_round_point", {
@@ -307,6 +315,10 @@ export const tournamentRoundRelations = relations(
     tournament: one(tournament, {
       fields: [tournamentRound.tournamentId],
       references: [tournament.id],
+    }),
+    motion: one(motion, {
+      fields: [tournamentRound.motionId],
+      references: [motion.id],
     }),
     roundPoints: many(tournamentRoundPoint),
   })

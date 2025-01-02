@@ -113,3 +113,19 @@ export const deleteTournament = async (
     next(e);
   }
 };
+
+export const getTournamentJudges = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  try {
+    const judges = await tournamentService.getTournamentJudges(+id);
+
+    return res.success(judges);
+  } catch (e) {
+    next(e);
+  }
+};

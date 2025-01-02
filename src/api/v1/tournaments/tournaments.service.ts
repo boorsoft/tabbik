@@ -1,5 +1,5 @@
 import { count, desc, eq } from "drizzle-orm";
-import { tournament } from "../../../db/schema/tournament";
+import { tournament, tournamentJudge } from "../../../db/schema/tournament";
 import { Tournament } from "./types";
 import { db } from "../../../db/db";
 import { DEFAULT_PAGE_SIZE } from "../../../constants/common";
@@ -65,4 +65,10 @@ export async function updateTournament(id: number, data: Partial<Tournament>) {
 
 export async function deleteTournament(id: number) {
   return db.delete(tournament).where(eq(tournament.id, id));
+}
+
+export async function getTournamentJudges(tournamentId: number) {
+  return db.query.tournamentJudge.findMany({
+    where: eq(tournamentJudge.tournamentId, tournamentId),
+  });
 }

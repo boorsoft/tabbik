@@ -42,4 +42,10 @@ tournaments.delete(
   tournamentsController.deleteTournament
 );
 
+tournaments.get(
+  "/:id/judges",
+  roleMiddleware(),
+  tournamentsController.getTournamentJudges
+);
+
 export default tournaments;
