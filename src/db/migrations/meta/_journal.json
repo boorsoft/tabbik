@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1734951845680,
-      "tag": "0000_uneven_naoko",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1734991779698,
-      "tag": "0001_mean_gamora",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1735126886532,
-      "tag": "0002_hard_mister_fear",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1735168857122,
-      "tag": "0003_real_betty_ross",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1735762736839,
-      "tag": "0004_white_sway",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1735762842023,
-      "tag": "0005_wakeful_mindworm",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1735764397414,
-      "tag": "0006_sharp_ricochet",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1735860101875,
-      "tag": "0007_hot_ken_ellis",
+      "when": 1735916218576,
+      "tag": "0000_sharp_paladin",
       "breakpoints": true
     }
   ]

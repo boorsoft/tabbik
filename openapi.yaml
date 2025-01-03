@@ -58,7 +58,26 @@ paths:
                   email: "johndoe@mail.com"
                 error: null
 
+  /tournaments:
+    get:
+      security: 
+        - BearerAuth: []
+      responses:
+        '200': 
+          description: Get tournaments list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tournament'
+
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Login:
       type: object
@@ -91,3 +110,51 @@ components:
         email:
           type: string
           example: johndoe@mail.com
+      
+    Tournament:
+      type: object
+      properties:
+        id: 
+          type: number
+          example: 34
+        title:
+          type: string
+          example: "Grand Tabbik Tournament"
+        description: 
+          type: string
+          example: "This is the description for the Grand Tabbik Tournament"
+        icon:
+          type: string
+          example: "https://base-url.com/images/test.png"
+        location:
+          type: string
+          example: "Bishkek, Kyrgyzstan"
+        ownerId: 
+          type: number
+          example: 20
+        maxTeams:
+          type: number
+          example: 60
+        registrationFee:
+          type: number
+          example: 150
+        isActive:
+          type: boolean
+          example: true
+        status:
+          type: string
+          enum:
+            - IN_PROGRESS
+            - PENDING
+            - FINISHED
+            - CANCELED
+            - HIDDEN
+        startDate:
+          type: string
+        endDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        

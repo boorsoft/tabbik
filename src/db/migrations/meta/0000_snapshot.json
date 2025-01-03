@@ -1,9 +1,148 @@
 {
-  "id": "c765d69b-a315-47a4-8b8c-e74bdcca878d",
+  "id": "0c2e6999-3595-4137-829b-cd5b20756015",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.motion": {
+      "name": "motion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.notification": {
+      "name": "notification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.notificationRecipient": {
+      "name": "notificationRecipient",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "notificationId": {
+          "name": "notificationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "roomId": {
+          "name": "roomId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isViewed": {
+          "name": "isViewed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "notificationRecipient_notificationId_notification_id_fk": {
+          "name": "notificationRecipient_notificationId_notification_id_fk",
+          "tableFrom": "notificationRecipient",
+          "tableTo": "notification",
+          "columnsFrom": [
+            "notificationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.tournament": {
       "name": "tournament",
       "schema": "",
@@ -63,19 +202,19 @@
           "notNull": false,
           "default": true
         },
-        "isRunning": {
-          "name": "isRunning",
-          "type": "boolean",
+        "status": {
+          "name": "status",
+          "type": "tournamentStatus",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": true,
+          "default": "'PENDING'"
         },
         "startDate": {
           "name": "startDate",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
+          "notNull": false
         },
         "endDate": {
           "name": "endDate",
@@ -87,14 +226,14 @@
           "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -126,7 +265,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -199,6 +338,69 @@
           "tableTo": "tournament",
           "columnsFrom": [
             "tournamentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.tournament_judge_invitation": {
+      "name": "tournament_judge_invitation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tournamentId": {
+          "name": "tournamentId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "judgeId": {
+          "name": "judgeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "invitationStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tournament_judge_invitation_tournamentId_tournament_id_fk": {
+          "name": "tournament_judge_invitation_tournamentId_tournament_id_fk",
+          "tableFrom": "tournament_judge_invitation",
+          "tableTo": "tournament",
+          "columnsFrom": [
+            "tournamentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tournament_judge_invitation_judgeId_user_id_fk": {
+          "name": "tournament_judge_invitation_judgeId_user_id_fk",
+          "tableFrom": "tournament_judge_invitation",
+          "tableTo": "user",
+          "columnsFrom": [
+            "judgeId"
           ],
           "columnsTo": [
             "id"
@@ -452,18 +654,19 @@
           "primaryKey": false,
           "notNull": true
         },
-        "resolution": {
-          "name": "resolution",
-          "type": "text",
+        "motionId": {
+          "name": "motionId",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "isClosed": {
-          "name": "isClosed",
-          "type": "boolean",
+        "status": {
+          "name": "status",
+          "type": "roundStatus",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "default": "'PENDING'"
         },
         "tournamentId": {
           "name": "tournamentId",
@@ -491,7 +694,7 @@
           "name": "resolutionIdx",
           "columns": [
             {
-              "expression": "resolution",
+              "expression": "motionId",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -504,6 +707,19 @@
         }
       },
       "foreignKeys": {
+        "tournament_round_motionId_motion_id_fk": {
+          "name": "tournament_round_motionId_motion_id_fk",
+          "tableFrom": "tournament_round",
+          "tableTo": "motion",
+          "columnsFrom": [
+            "motionId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "tournament_round_tournamentId_tournament_id_fk": {
           "name": "tournament_round_tournamentId_tournament_id_fk",
           "tableFrom": "tournament_round",
@@ -591,7 +807,7 @@
           "name": "title",
           "type": "varchar(160)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "firstSpeakerId": {
           "name": "firstSpeakerId",
@@ -610,6 +826,14 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "teamJoinRequestStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
         },
         "createdAt": {
           "name": "createdAt",
@@ -685,7 +909,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "tournament_team_title_unique": {
+          "name": "tournament_team_title_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "title"
+          ]
+        }
+      }
     },
     "public.tournament_user_speaker_point": {
       "name": "tournament_user_speaker_point",
@@ -796,12 +1028,13 @@
           "primaryKey": false,
           "notNull": true
         },
-        "isAccepted": {
-          "name": "isAccepted",
-          "type": "boolean",
+        "status": {
+          "name": "status",
+          "type": "invitationStatus",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": true,
+          "default": "'PENDING'"
         },
         "createdAt": {
           "name": "createdAt",
@@ -917,6 +1150,13 @@
           "notNull": true,
           "default": "'USER'"
         },
+        "isNovice": {
+          "name": "isNovice",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -954,6 +1194,34 @@
     }
   },
   "enums": {
+    "public.invitationStatus": {
+      "name": "invitationStatus",
+      "schema": "public",
+      "values": [
+        "ACCEPTED",
+        "REJECTED",
+        "PENDING"
+      ]
+    },
+    "public.roundStatus": {
+      "name": "roundStatus",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "IN_PROGRESS",
+        "FEEDBACKING",
+        "FINISHED"
+      ]
+    },
+    "public.teamJoinRequestStatus": {
+      "name": "teamJoinRequestStatus",
+      "schema": "public",
+      "values": [
+        "APPROVED",
+        "REJECTED",
+        "PENDING"
+      ]
+    },
     "public.tournamentRoomPosition": {
       "name": "tournamentRoomPosition",
       "schema": "public",
@@ -962,6 +1230,17 @@
         "CLOSING_GOVERNMENT",
         "OPENING_OPPOSITION",
         "CLOSING_OPPOSITION"
+      ]
+    },
+    "public.tournamentStatus": {
+      "name": "tournamentStatus",
+      "schema": "public",
+      "values": [
+        "IN_PROGRESS",
+        "PENDING",
+        "FINISHED",
+        "CANCELED",
+        "HIDDEN"
       ]
     },
     "public.role": {

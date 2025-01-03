@@ -1,5 +1,29 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."invitationStatus" AS ENUM('ACCEPTED', 'REJECTED', 'PENDING');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."roundStatus" AS ENUM('PENDING', 'IN_PROGRESS', 'FEEDBACKING', 'FINISHED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."teamJoinRequestStatus" AS ENUM('APPROVED', 'REJECTED', 'PENDING');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."tournamentRoomPosition" AS ENUM('OPENING_GOVERNMENT', 'CLOSING_GOVERNMENT', 'OPENING_OPPOSITION', 'CLOSING_OPPOSITION');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."tournamentStatus" AS ENUM('IN_PROGRESS', 'PENDING', 'FINISHED', 'CANCELED', 'HIDDEN');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -9,6 +33,30 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "motion" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"title" varchar(256) NOT NULL,
+	"content" text NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "notification" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"message" varchar(256) NOT NULL,
+	"data" json,
+	"type" varchar(256) NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "notificationRecipient" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"notificationId" integer,
+	"roomId" varchar(255),
+	"isViewed" boolean DEFAULT false NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL
+);
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tournament" (
 	"id" serial PRIMARY KEY NOT NULL,
@@ -20,11 +68,11 @@ CREATE TABLE IF NOT EXISTS "tournament" (
 	"maxTeams" integer NOT NULL,
 	"registrationFee" integer NOT NULL,
 	"isActive" boolean DEFAULT true,
-	"isRunning" boolean DEFAULT false,
-	"startDate" timestamp DEFAULT now(),
+	"status" "tournamentStatus" DEFAULT 'PENDING' NOT NULL,
+	"startDate" timestamp,
 	"endDate" timestamp,
-	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now(),
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "tournament_title_unique" UNIQUE("title")
 );
 --> statement-breakpoint
@@ -34,6 +82,13 @@ CREATE TABLE IF NOT EXISTS "tournament_judge" (
 	"tournamentId" integer NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "tournament_judge_invitation" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"tournamentId" integer NOT NULL,
+	"judgeId" integer NOT NULL,
+	"status" "invitationStatus" DEFAULT 'PENDING' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tournament_judge_point" (
@@ -66,8 +121,8 @@ CREATE TABLE IF NOT EXISTS "tournament_room_team" (
 CREATE TABLE IF NOT EXISTS "tournament_round" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"round" integer NOT NULL,
-	"resolution" text NOT NULL,
-	"isClosed" boolean DEFAULT false,
+	"motionId" integer,
+	"status" "roundStatus" DEFAULT 'PENDING',
 	"tournamentId" integer NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now()
@@ -83,12 +138,14 @@ CREATE TABLE IF NOT EXISTS "tournament_round_point" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tournament_team" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"title" varchar(160),
+	"title" varchar(160) NOT NULL,
 	"firstSpeakerId" integer NOT NULL,
 	"secondSpeakerId" integer NOT NULL,
 	"tournamentId" integer NOT NULL,
+	"status" "teamJoinRequestStatus" DEFAULT 'PENDING' NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"updatedAt" timestamp DEFAULT now(),
+	CONSTRAINT "tournament_team_title_unique" UNIQUE("title")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tournament_user_speaker_point" (
@@ -106,7 +163,7 @@ CREATE TABLE IF NOT EXISTS "user_tournament_team_invitation" (
 	"receiverId" integer NOT NULL,
 	"tournamentId" integer NOT NULL,
 	"teamTitle" varchar(130) NOT NULL,
-	"isAccepted" boolean DEFAULT false,
+	"status" "invitationStatus" DEFAULT 'PENDING' NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now()
 );
@@ -120,6 +177,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"firstName" varchar(100),
 	"lastName" varchar(100),
 	"role" "role" DEFAULT 'USER' NOT NULL,
+	"isNovice" boolean DEFAULT false NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "user_username_unique" UNIQUE("username"),
@@ -127,7 +185,13 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "tournament" ADD CONSTRAINT "tournament_ownerId_user_id_fk" FOREIGN KEY ("ownerId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "notificationRecipient" ADD CONSTRAINT "notificationRecipient_notificationId_notification_id_fk" FOREIGN KEY ("notificationId") REFERENCES "public"."notification"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tournament" ADD CONSTRAINT "tournament_ownerId_user_id_fk" FOREIGN KEY ("ownerId") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -140,6 +204,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "tournament_judge" ADD CONSTRAINT "tournament_judge_tournamentId_tournament_id_fk" FOREIGN KEY ("tournamentId") REFERENCES "public"."tournament"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tournament_judge_invitation" ADD CONSTRAINT "tournament_judge_invitation_tournamentId_tournament_id_fk" FOREIGN KEY ("tournamentId") REFERENCES "public"."tournament"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tournament_judge_invitation" ADD CONSTRAINT "tournament_judge_invitation_judgeId_user_id_fk" FOREIGN KEY ("judgeId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -176,6 +252,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "tournament_room_team" ADD CONSTRAINT "tournament_room_team_roomId_tournament_room_id_fk" FOREIGN KEY ("roomId") REFERENCES "public"."tournament_room"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tournament_round" ADD CONSTRAINT "tournament_round_motionId_motion_id_fk" FOREIGN KEY ("motionId") REFERENCES "public"."motion"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -241,5 +323,5 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tournamentTitleIdx" ON "tournament" USING btree ("title");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "resolutionIdx" ON "tournament_round" USING btree ("resolution");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "resolutionIdx" ON "tournament_round" USING btree ("motionId");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tournamentTeamTitleIdx" ON "tournament_team" USING btree ("title");
